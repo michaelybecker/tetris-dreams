@@ -6,7 +6,7 @@ $(function() {
 
     var init, render, renderer, scene, camera, box;
     var lights;
-    var brick1, brick1loader, brick2, brick2loader, brick3, brick3loader, brick4, brick4loader;
+    var brick1, brick1loader, brick2, brick2loader, brick3, brick3loader, brick4, brick4loader, brick5, brick5loader;
     var sphere, plane;
     var clock;
     var FPC, controls;
@@ -23,9 +23,12 @@ $(function() {
     var prevTime = performance.now();
     var velocity = new THREE.Vector3();
 
+    var multiplier = 200;
 
 
-
+    var times = 0;
+    var maxTimes = 20;
+    var dropInterval = 5000;
 
     var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
 
@@ -159,7 +162,7 @@ $(function() {
                     break;
 
                 case 32: // space
-                    if (canJump === true) velocity.y += 350;
+                    if (canJump === true) velocity.y += 200;
                     canJump = false;
                     break;
 
@@ -199,63 +202,226 @@ $(function() {
         document.addEventListener('keyup', onKeyUp, false);
 
 
-        //box
-        box = new Physijs.BoxMesh(new THREE.CubeGeometry(5, 5, 5), new THREE.MeshPhongMaterial({
-            color: 0x888888
-        }));
-        scene.add(box);
+        window.addEventListener('resize', onWindowResize, false);
 
-        //sphere
-        sphere = new Physijs.SphereMesh(new THREE.SphereGeometry(3, 15, 15), new THREE.MeshPhongMaterial({
-            color: 0x553246
-        }));
-        sphere.position.set(3, 13, 0);
-        scene.add(sphere);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // //box
+        // box = new Physijs.BoxMesh(new THREE.CubeGeometry(5, 5, 5), new THREE.MeshPhongMaterial({
+        //     color: 0x888888
+        // }));
+        // scene.add(box);
+
+        // //sphere
+        // sphere = new Physijs.SphereMesh(new THREE.SphereGeometry(3, 15, 15), new THREE.MeshPhongMaterial({
+        //     color: 0x553246
+        // }));
+        // sphere.position.set(3, 13, 0);
+        // scene.add(sphere);
 
         //r-shape brick
 
-        brick1loader = brick2loader = brick3loader = brick4loader = new THREE.JSONLoader();
+        brick1loader = brick2loader = brick3loader = brick4loader = brick5loader = new THREE.JSONLoader();
 
 
-        brick1loader.load("./JSON/R-shape.json", function(geometry) {
+        function b1() {
+            setTimeout(function() {
 
-            var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshNormalMaterial());
-            // mesh.scale.set(5,5,5);
-            mesh.position.y = 20;
+                var x = Math.floor((Math.random() * multiplier) + 1);
+                var y = Math.floor((Math.random() * multiplier) + 1);
+                brick5loader.load("./JSON/R-shape.json", function(geometry) {
 
-            scene.add(mesh);
+                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
+                        color: 0xD3D3D3
+                    }));
+                    mesh.scale.set(2, 2, 2);
+                    mesh.position.y = 100;
+                    mesh.position.x = x;
+                    mesh.position.z = y;
 
+                    mesh.rotation.x = x;
+                    mesh.rotation.y = y;
+                    mesh.rotation.z = x;
 
-        });
-
-        brick2loader.load("./JSON/cube.json", function(geometry) {
-
-            var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshNormalMaterial());
-            // mesh.scale.set(5,5,5);
-            mesh.position.y = 20;
-            mesh.position.x = 30;
-
-            scene.add(mesh);
-
-
-        });
-
-        brick2loader.load("./JSON/cube.json", function(geometry) {
-
-            var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshNormalMaterial());
-            // mesh.scale.set(5,5,5);
-            mesh.position.y = 20;
-            mesh.position.x = -20;
-
-            scene.add(mesh);
+                    scene.add(mesh);
 
 
-        });
+                });
+            }, 2000);
+        }
+
+        function b2() {
+            setTimeout(function() {
+
+                var x = Math.floor((Math.random() * multiplier) + 1);
+                var y = Math.floor((Math.random() * multiplier) + 1);
+                brick5loader.load("./JSON/cube.json", function(geometry) {
+
+                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
+                        color: 0x000080
+                    }));
+                    mesh.scale.set(2, 2, 2);
+                    mesh.position.y = 100;
+                    mesh.position.x = x;
+                    mesh.position.z = y;
+
+                    mesh.rotation.x = x;
+                    mesh.rotation.y = y;
+                    mesh.rotation.z = x;
+
+                    scene.add(mesh);
 
 
-        plane = new Physijs.BoxMesh(new THREE.BoxGeometry(700, 1, 700), new THREE.MeshBasicMaterial({
-            color: 0x884432
-        }), 0);
+                });
+            }, 2000);
+
+        }
+
+        function b3() {
+            setTimeout(function() {
+
+                var x = Math.floor((Math.random() * multiplier) + 1);
+                var y = Math.floor((Math.random() * multiplier) + 1);
+                brick5loader.load("./JSON/squiggly.json", function(geometry) {
+
+                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
+                        color: 0x008080
+                    }));
+                    mesh.scale.set(2, 2, 2);
+                    mesh.position.y = 100;
+                    mesh.position.x = x;
+                    mesh.position.z = y;
+
+                    mesh.rotation.x = x;
+                    mesh.rotation.y = y;
+                    mesh.rotation.z = x;
+
+                    scene.add(mesh);
+
+
+                });
+            }, 2000);
+
+        }
+
+
+        function b4() {
+            setTimeout(function() {
+
+                var x = Math.floor((Math.random() * multiplier) + 1);
+                var y = Math.floor((Math.random() * multiplier) + 1);
+                brick5loader.load("./JSON/pedestal.json", function(geometry) {
+
+                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
+                        color: 0xD2691E
+                    }));
+                    mesh.scale.set(2, 2, 2);
+                    mesh.position.y = 100;
+                    mesh.position.x = x;
+                    mesh.position.z = y;
+
+                    mesh.rotation.x = x;
+                    mesh.rotation.y = y;
+                    mesh.rotation.z = x;
+
+                    scene.add(mesh);
+
+
+                });
+            }, 2000);
+
+        }
+
+
+        function b5() {
+            setTimeout(function() {
+
+                var x = Math.floor((Math.random() * multiplier) + 1);
+                var y = Math.floor((Math.random() * multiplier) + 1);
+                brick5loader.load("./JSON/longline.json", function(geometry) {
+
+                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
+                        color: 0x800000
+                    }));
+                    mesh.scale.set(2, 2, 2);
+                    mesh.position.y = 100;
+                    mesh.position.x = x;
+                    mesh.position.z = y;
+
+                    mesh.rotation.x = x;
+                    mesh.rotation.y = y;
+                    mesh.rotation.z = x;
+
+                    scene.add(mesh);
+
+
+                });
+            }, 2000);
+
+        }
+
+
+
+        var timelyMake = setInterval(function() {
+
+            function makeBrick(i) {
+
+                switch (i) {
+                    case 1:
+                        b1();
+                        break;
+
+                    case 2:
+                        b2();
+                        break;
+
+                    case 3:
+                        b3();
+                        break;
+
+                    case 4:
+                        b4();
+                        break;
+
+                    case 5:
+                        b5();
+                        break;
+                }
+
+
+            }
+
+            var brickNum = Math.round(Math.random() * 5) + 1;
+
+            // console.log(brickNum);
+            if (brickNum % 3 == 0) {
+                makeBrick(1);
+            } else if (brickNum % 4 == 0) {
+                makeBrick(2);
+            } else if (brickNum % 5 == 0) {
+                makeBrick(3);
+            } else if (brickNum % 2 == 0) {
+                makeBrick(4);
+            } else {
+                makeBrick(5);
+            }
+            times++;
+            // console.log("time: " + times);
+            // console.log("maxtime:" + maxTimes);
+            if (times >= maxTimes) {
+                clearInterval(timelyMake);
+            }
+        }, dropInterval);
+
+        var planeText = new THREE.ImageUtils.loadTexture("../images/checkers.gif");
+        planeText.wrapS = THREE.RepeatWrapping;
+        planeText.wrapt = THREE.RepeatWrapping;
+        planeText.repeat.set(3,3);
+        plane = new Physijs.BoxMesh(new THREE.BoxGeometry(1000, 1, 1000), new THREE.MeshLambertMaterial({map: planeText}), 0);
         plane.rotation.x = Math.PI;
         plane.position.set(0, -2, 0);
         scene.add(plane);
@@ -264,9 +430,47 @@ $(function() {
         lights.position.set(0, 17, 0);
         scene.add(lights);
 
+        var light2 = new THREE.AmbientLight( 0xFFFFFF, 0.5 );
+        scene.add(light2);
 
         requestAnimationFrame(render);
 
+
+        //skybox
+        var skyGeometry = new THREE.BoxGeometry(700, 700, 700);
+        var skyArray = [];
+        skyArray.push(new THREE.MeshBasicMaterial({
+            map: THREE.ImageUtils.loadTexture("../images/sides.jpg"),
+            side: THREE.BackSide
+        }));
+        skyArray.push(new THREE.MeshBasicMaterial({
+            map: THREE.ImageUtils.loadTexture("../images/sides.jpg"),
+            side: THREE.BackSide
+        }));
+        skyArray.push(new THREE.MeshBasicMaterial({
+            map: THREE.ImageUtils.loadTexture("../images/top.jpg"),
+            side: THREE.BackSide
+        }));
+        skyArray.push(new THREE.MeshBasicMaterial({
+            map: THREE.ImageUtils.loadTexture("../images/bottom.jpg"),
+            side: THREE.BackSide
+        }));
+        skyArray.push(new THREE.MeshBasicMaterial({
+            map: THREE.ImageUtils.loadTexture("../images/sides.jpg"),
+            side: THREE.BackSide
+        }));
+        skyArray.push(new THREE.MeshBasicMaterial({
+            map: THREE.ImageUtils.loadTexture("../images/sides.jpg"),
+            side: THREE.BackSide
+        }));
+
+
+        var skyMaterial = new THREE.MeshFaceMaterial(skyArray);
+        var skyBox = new THREE.Mesh(skyGeometry, skyMaterial);
+        skyBox.position.y = 340;
+        scene.add(skyBox);
+
+        //end init
     };
 
 
@@ -298,14 +502,14 @@ $(function() {
             controls.getObject().translateY(velocity.y * delta);
             controls.getObject().translateZ(velocity.z * delta);
 
-            if (controls.getObject().position.y < 10) {
+            // if (controls.getObject().position.y < 10) {
 
-                velocity.y = 0;
-                controls.getObject().position.y = 10;
+            //     velocity.y = 0;
+            //     controls.getObject().position.y = 10;
 
-                canJump = true;
+            //     canJump = true;
 
-            }
+            // }
 
             prevTime = time;
 
