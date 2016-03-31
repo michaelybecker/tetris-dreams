@@ -4,14 +4,21 @@ $(function() {
     Physijs.scripts.worker = "./js/physijs_worker.js";
     Physijs.scripts.ammo = "./ammo.js";
 
+
+    //leapmotion
+
+    // var controller = new Leap.Controller().use('riggedHand').connect();
+
     var init, render, renderer, scene, camera, box;
     var lights;
     var brick1, brick1loader, brick2, brick2loader, brick3, brick3loader, brick4, brick4loader, brick5, brick5loader;
     var sphere, plane;
     var clock;
     var FPC, controls;
+    var composer, bloom, bokeh, glitch;
 
 
+    var width = window.innerWidth, height = window.innerHeight;
     var controlsEnabled = false;
 
     var moveForward = false;
@@ -26,9 +33,10 @@ $(function() {
     var multiplier = 200;
 
 
+
     var times = 0;
-    var maxTimes = 20;
-    var dropInterval = 5000;
+    var maxTimes = 100;
+    var dropInterval = 500;
 
     var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
 
@@ -71,8 +79,6 @@ $(function() {
         document.addEventListener('webkitpointerlockerror', pointerlockerror, false);
 
         document.body.addEventListener('click', function(event) {
-
-            // instructions.style.display = 'none';
 
             // Ask the browser to lock the pointer
             element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
@@ -143,6 +149,7 @@ $(function() {
 
                 case 38: // up
                 case 87: // w
+                    event.preventDefault();
                     moveForward = true;
                     break;
 
@@ -417,11 +424,14 @@ $(function() {
             }
         }, dropInterval);
 
+        //checkerboard plane
+
+
         var planeText = new THREE.ImageUtils.loadTexture("../images/checkers.gif");
         planeText.wrapS = THREE.RepeatWrapping;
         planeText.wrapt = THREE.RepeatWrapping;
-        planeText.repeat.set(3,3);
-        plane = new Physijs.BoxMesh(new THREE.BoxGeometry(1000, 1, 1000), new THREE.MeshLambertMaterial({map: planeText}), 0);
+        planeText.repeat.set(0.01, 0.01);
+        plane = new Physijs.BoxMesh(new THREE.BoxGeometry(1000, 1, 1000), new THREE.MeshLambertMaterial({ map: planeText }), 0);
         plane.rotation.x = Math.PI;
         plane.position.set(0, -2, 0);
         scene.add(plane);
@@ -430,7 +440,7 @@ $(function() {
         lights.position.set(0, 17, 0);
         scene.add(lights);
 
-        var light2 = new THREE.AmbientLight( 0xFFFFFF, 0.5 );
+        var light2 = new THREE.AmbientLight(0xFFFFFF, 0.5);
         scene.add(light2);
 
         requestAnimationFrame(render);
@@ -470,6 +480,30 @@ $(function() {
         skyBox.position.y = 340;
         scene.add(skyBox);
 
+
+        //postprocessing
+
+        var bokehPass = new THREE.BokehPass(scene, camera, {
+            focus: 1,
+            aperture: 0.09,
+            maxblur: 1.4,
+            width: width,
+            height: height
+        });
+
+        bokehPass.renderToScreen = true;
+
+        composer = new THREE.EffectComposer(renderer);
+
+        // dot screen        
+        // var dotScreenEffect = new THREE.ShaderPass(THREE.DotScreenShader);
+        // dotScreenEffect.uniforms['scale'].value = 4;
+        // dotScreenEffect.renderToScreen = true;
+        // composer.addPass(dotScreenEffect);
+
+
+        composer.addPass(new THREE.RenderPass(scene, camera));
+        composer.addPass(bokehPass);
         //end init
     };
 
@@ -502,14 +536,14 @@ $(function() {
             controls.getObject().translateY(velocity.y * delta);
             controls.getObject().translateZ(velocity.z * delta);
 
-            // if (controls.getObject().position.y < 10) {
+            if (controls.getObject().position.y < 10) {
 
-            //     velocity.y = 0;
-            //     controls.getObject().position.y = 10;
+                velocity.y = 0;
+                controls.getObject().position.y = 10;
 
-            //     canJump = true;
+                canJump = true;
 
-            // }
+            }
 
             prevTime = time;
 
@@ -519,8 +553,9 @@ $(function() {
 
         scene.simulate();
 
-        renderer.render(scene, camera);
         requestAnimationFrame(render);
+        composer.render();
+
 
     };
 
