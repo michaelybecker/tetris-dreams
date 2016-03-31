@@ -16,7 +16,8 @@ $(function() {
     var clock;
     var FPC, controls;
     var composer, bloom, bokeh, glitch;
-
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
 
     var width = window.innerWidth, height = window.innerHeight;
     var controlsEnabled = false;
@@ -35,8 +36,8 @@ $(function() {
 
 
     var times = 0;
-    var maxTimes = 100;
-    var dropInterval = 500;
+    var maxTimes = 50;
+    var dropInterval = 1000;
 
     var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
 
@@ -136,10 +137,9 @@ $(function() {
 
         camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
 
-        camera.position.set(10, 0, 1);
-        camera.lookAt(scene.position);
-        scene.add(camera);
+        camera.position.set(0, 0, 10);
 
+        scene.add(camera);
         controls = new THREE.PointerLockControls(camera);
         scene.add(controls.getObject());
 
@@ -217,20 +217,17 @@ $(function() {
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // //box
-        // box = new Physijs.BoxMesh(new THREE.CubeGeometry(5, 5, 5), new THREE.MeshPhongMaterial({
-        //     color: 0x888888
-        // }));
-        // scene.add(box);
 
-        // //sphere
-        // sphere = new Physijs.SphereMesh(new THREE.SphereGeometry(3, 15, 15), new THREE.MeshPhongMaterial({
-        //     color: 0x553246
-        // }));
-        // sphere.position.set(3, 13, 0);
-        // scene.add(sphere);
+        function onMouseMove( event ) {
 
-        //r-shape brick
+    // calculate mouse position in normalized device coordinates
+    // (-1 to +1) for both components
+
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+}
+
 
         brick1loader = brick2loader = brick3loader = brick4loader = brick5loader = new THREE.JSONLoader();
 
@@ -243,7 +240,7 @@ $(function() {
                 brick5loader.load("./JSON/R-shape.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
-                        color: 0xD3D3D3
+                        color: 0xff3300
                     }));
                     mesh.scale.set(2, 2, 2);
                     mesh.position.y = 100;
@@ -426,8 +423,9 @@ $(function() {
 
         //checkerboard plane
 
+        var loader = new THREE.TextureLoader();
 
-        var planeText = new THREE.ImageUtils.loadTexture("../images/checkers.gif");
+        var planeText = loader.load("../images/checkers.gif");
         planeText.wrapS = THREE.RepeatWrapping;
         planeText.wrapt = THREE.RepeatWrapping;
         planeText.repeat.set(0.01, 0.01);
@@ -449,35 +447,41 @@ $(function() {
         //skybox
         var skyGeometry = new THREE.BoxGeometry(700, 700, 700);
         var skyArray = [];
+        var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture("../images/sides.jpg"),
+            map: loader.load("../images/sides.jpg"),
             side: THREE.BackSide
         }));
+        var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture("../images/sides.jpg"),
+            map: loader.load("../images/sides.jpg"),
             side: THREE.BackSide
         }));
+        var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture("../images/top.jpg"),
+            map: loader.load("../images/top.jpg"),
             side: THREE.BackSide
         }));
+        var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture("../images/bottom.jpg"),
+            map: loader.load("../images/bottom.jpg"),
             side: THREE.BackSide
         }));
+        var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture("../images/sides.jpg"),
+            map: loader.load("../images/sides.jpg"),
             side: THREE.BackSide
         }));
+                var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture("../images/sides.jpg"),
+            map: loader.load("../images/sides.jpg"),
             side: THREE.BackSide
         }));
 
 
         var skyMaterial = new THREE.MeshFaceMaterial(skyArray);
         var skyBox = new THREE.Mesh(skyGeometry, skyMaterial);
-        skyBox.position.y = 340;
+        skyBox.position.y = 140;
         scene.add(skyBox);
 
 
@@ -495,7 +499,7 @@ $(function() {
 
         composer = new THREE.EffectComposer(renderer);
 
-        // dot screen        
+        // dot screen
         // var dotScreenEffect = new THREE.ShaderPass(THREE.DotScreenShader);
         // dotScreenEffect.uniforms['scale'].value = 4;
         // dotScreenEffect.renderToScreen = true;
@@ -504,8 +508,42 @@ $(function() {
 
         composer.addPass(new THREE.RenderPass(scene, camera));
         composer.addPass(bokehPass);
+
+
+
+        camera.lookAt(new THREE.Vector3(0,100,-100));
+
+
+
+window.addEventListener( 'mousemove', onMouseMove, false );
+
+//click raycasting
+window.addEventListener('click', function(){
+    // update the picking ray with the camera and mouse position
+    raycaster.setFromCamera( mouse, camera );
+
+    // calculate objects intersecting the picking ray
+    var intersects = raycaster.intersectObjects( scene.children );
+
+    for ( var i = 0; i < intersects.length; i++ ) {
+        console.log(intersects[i].object);
+        intersects[ i ].object.__dirtyPosition = true;
+        intersects[ i ].object.__dirtyRotation = true;
+        intersects[ i ].object.material.color.set( 0x00ff00 );
+
+
+    // You may also want to cancel the object's velocity
+    intersects[ i ].object.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+    intersects[ i ].object.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+
+    }
+
+
+}, false);
+
         //end init
     };
+
 
 
     render = function() {
@@ -513,7 +551,7 @@ $(function() {
         if (controlsEnabled) {
 
             var time = performance.now();
-            var delta = (time - prevTime) / 1000;
+            var delta = (time - prevTime) / 500;
 
             velocity.x -= velocity.x * 10.0 * delta;
             velocity.z -= velocity.z * 10.0 * delta;
@@ -541,11 +579,17 @@ $(function() {
                 velocity.y = 0;
                 controls.getObject().position.y = 10;
 
-                canJump = true;
+                canJump = false;
 
             }
 
             prevTime = time;
+
+
+
+
+    renderer.render( scene, camera );
+
 
         }
 

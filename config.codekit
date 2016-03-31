@@ -3244,6 +3244,17 @@
 		"outputPathIsSetByUser": 0,
 		"processed": 0
 		},
+	"\/images\/crosshair.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 110,
+		"inputAbbreviatedPath": "\/images\/crosshair.png",
+		"outputAbbreviatedPath": "\/images\/crosshair.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
 	"\/images\/sides.jpg": {
 		"fileType": 16384,
 		"ignore": 0,
