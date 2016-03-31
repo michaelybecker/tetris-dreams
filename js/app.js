@@ -1,6 +1,9 @@
 'use strict';
 $(function() {
 
+
+
+
     Physijs.scripts.worker = "./js/physijs_worker.js";
     Physijs.scripts.ammo = "./ammo.js";
 
@@ -19,7 +22,8 @@ $(function() {
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
 
-    var width = window.innerWidth, height = window.innerHeight;
+    var width = window.innerWidth,
+        height = window.innerHeight;
     var controlsEnabled = false;
 
     var moveForward = false;
@@ -32,6 +36,9 @@ $(function() {
     var velocity = new THREE.Vector3();
 
     var multiplier = 200;
+
+    var freezeArray = [];
+
 
 
 
@@ -134,6 +141,7 @@ $(function() {
         document.body.appendChild(renderer.domElement);
 
         scene = new Physijs.Scene;
+        scene.setGravity(new THREE.Vector3(0, -50, 0));
 
         camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
 
@@ -142,6 +150,11 @@ $(function() {
         scene.add(camera);
         controls = new THREE.PointerLockControls(camera);
         scene.add(controls.getObject());
+
+        //set crosshair in place
+        //set chair in place
+        $(".chair")[0].style.top = window.innerHeight / 2 + "px";
+        $(".chair")[0].style.left = window.innerWidth / 2 + "px";
 
         var onKeyDown = function(event) {
 
@@ -215,18 +228,20 @@ $(function() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            $(".chair")[0].style.top = window.innerHeight / 2 + "px";
+            $(".chair")[0].style.left = window.innerWidth / 2 + "px";
         }
 
 
-        function onMouseMove( event ) {
+        // function onMouseMove(event) {
 
-    // calculate mouse position in normalized device coordinates
-    // (-1 to +1) for both components
+        //     // calculate mouse position in normalized device coordinates
+        //     // (-1 to +1) for both components
 
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        //     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        //     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-}
+        // }
 
 
         brick1loader = brick2loader = brick3loader = brick4loader = brick5loader = new THREE.JSONLoader();
@@ -331,7 +346,6 @@ $(function() {
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
-
                     scene.add(mesh);
 
 
@@ -432,6 +446,7 @@ $(function() {
         plane = new Physijs.BoxMesh(new THREE.BoxGeometry(1000, 1, 1000), new THREE.MeshLambertMaterial({ map: planeText }), 0);
         plane.rotation.x = Math.PI;
         plane.position.set(0, -2, 0);
+        plane.name = "plane";
         scene.add(plane);
 
         lights = new THREE.PointLight(0xFFFFFF, 1);
@@ -472,7 +487,7 @@ $(function() {
             map: loader.load("../images/sides.jpg"),
             side: THREE.BackSide
         }));
-                var loader = new THREE.TextureLoader();
+        var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
             map: loader.load("../images/sides.jpg"),
             side: THREE.BackSide
@@ -511,35 +526,48 @@ $(function() {
 
 
 
-        camera.lookAt(new THREE.Vector3(0,100,-100));
+        camera.lookAt(new THREE.Vector3(0, 100, -100));
+
+
+        // window.addEventListener('mousemove', onMouseMove, false);
+
+
+        //helper plane for dragging
+        // var helplane = new THREE.Mesh(
+        //     new THREE.PlaneBufferGeometry(2000, 2000, 8, 8),
+        //     new THREE.MeshBasicMaterial({ visible: true })
+        // );
+        // scene.add(helplane);
+
+        //click raycasting
+        document.addEventListener('mousedown', function() {
+
+            var mouse = new THREE.Vector2();
+            mouse.x = 0.0;
+            mouse.y = 0.0;
+            // console.log(mouse.x, mouse.y);
+            // update the picking ray with the camera and mouse position
+            raycaster.setFromCamera(mouse, camera);
+            // calculate objects intersecting the picking ray
+            var intersects = raycaster.intersectObjects(scene.children);
+            for (var i = 0; i < intersects.length; i++) {
+
+                if (intersects[i].object.name != "plane") {
+
+                    intersects[i].object.material.color.set(0x00ff00);
+                    // scene.remove(intersects[i].object);
+                    freezeArray.push(intersects[i].object);
+
+
+                }
 
 
 
-window.addEventListener( 'mousemove', onMouseMove, false );
 
-//click raycasting
-window.addEventListener('click', function(){
-    // update the picking ray with the camera and mouse position
-    raycaster.setFromCamera( mouse, camera );
+            }
 
-    // calculate objects intersecting the picking ray
-    var intersects = raycaster.intersectObjects( scene.children );
-
-    for ( var i = 0; i < intersects.length; i++ ) {
-        console.log(intersects[i].object);
-        intersects[ i ].object.__dirtyPosition = true;
-        intersects[ i ].object.__dirtyRotation = true;
-        intersects[ i ].object.material.color.set( 0x00ff00 );
-
-
-    // You may also want to cancel the object's velocity
-    intersects[ i ].object.setLinearVelocity(new THREE.Vector3(0, 0, 0));
-    intersects[ i ].object.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-
-    }
-
-
-}, false);
+            console.log(controls.getObject().position);
+        }, false);
 
         //end init
     };
@@ -548,6 +576,8 @@ window.addEventListener('click', function(){
 
     render = function() {
         // FPC.update(clock.getDelta());
+
+
         if (controlsEnabled) {
 
             var time = performance.now();
@@ -579,27 +609,27 @@ window.addEventListener('click', function(){
                 velocity.y = 0;
                 controls.getObject().position.y = 10;
 
-                canJump = false;
+                // canJump = false;
 
             }
 
             prevTime = time;
 
-
-
-
-    renderer.render( scene, camera );
-
-
         }
 
+        if (freezeArray.length > 0) {
+            freezeArray.forEach(function(i){
 
-
-        scene.simulate();
-
+                i.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+                i.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+                i.__dirtyPosition = true;
+                i.__dirtyRotation = true;
+            });
+        }
         requestAnimationFrame(render);
+        scene.simulate();
         composer.render();
-
+        // renderer.render(scene, camera);
 
     };
 
