@@ -34,7 +34,7 @@ $(function() {
     var prevTime = performance.now();
     var velocity = new THREE.Vector3();
 
-    var gravity = -30;
+    var gravity = -20;
     var multiplier = 200;
     var freezeArray = [];
 
@@ -175,6 +175,38 @@ $(function() {
         hitCounter.style.fontSize = "2rem";
         document.body.appendChild(hitCounter);
         $(hitCounter).text(hits);
+        hitCounter.style.display = "none";
+
+
+        // level counter
+        var levelCounter = document.createElement("div");
+        levelCounter.class = "levelcounter";
+        levelCounter.style.position = "absolute";
+        levelCounter.style.top = window.innerHeight / 2 + "px";
+        levelCounter.style.left = window.innerWidth / 2 + "px";
+        levelCounter.style.color = "#fff";
+        levelCounter.style.width = window.innerWidth / 3 + "px";
+        levelCounter.style.height = window.innerHeight / 3 + "px";
+        levelCounter.style.marginLeft = (-1 * window.innerWidth / 6) + "px";
+        levelCounter.style.marginTop = (-1 * window.innerHeight / 1.4) + "px";
+
+        levelCounter.style.fontFamily = "Raleway";
+        levelCounter.style.fontWeight = "100";
+        levelCounter.style.fontSize = "60rem";
+        levelCounter.style.textAlign = "center";
+        levelCounter.style.color = "#333";
+        document.body.appendChild(levelCounter);
+        $(levelCounter).text(level);
+        $(levelCounter).hide();
+
+        function displayLevel(level) {
+            // $(levelCounter).style.display = "inline";
+            $(levelCounter).text(level);
+
+            $(levelCounter).fadeIn(3000);
+            $(levelCounter).fadeOut(1500);
+            // $(levelCounter).style.display = "none";
+        }
 
 
         var onKeyDown = function(event) {
@@ -251,8 +283,8 @@ $(function() {
             renderer.setSize(window.innerWidth, window.innerHeight);
             $(".chair")[0].style.top = window.innerHeight / 2 + "px";
             $(".chair")[0].style.left = window.innerWidth / 2 + "px";
-        hitCounter.style.top = window.innerHeight - 50 + "px";
-        hitCounter.style.left = window.innerWidth / 2 + "px";
+            hitCounter.style.top = window.innerHeight - 50 + "px";
+            hitCounter.style.left = window.innerWidth / 2 + "px";
         }
 
 
@@ -630,6 +662,8 @@ $(function() {
                         gravity -= 10;
                         scene.setGravity(new THREE.Vector3(0, gravity, 0));
                         console.log("next up! Level " + level + ", dropInterval: " + dropInterval, "dropRadius: " + multiplier + ", gravity: " + gravity);
+                        displayLevel(level);
+
 
                     }
 
@@ -643,15 +677,18 @@ $(function() {
             // console.log(controls.getObject().position);
         }, false);
 
+        displayLevel(level);
+        console.log(level);
+
         //end init
     };
 
 
-// bad, nasty error bandaid
+    // bad, nasty error bandaid
 
-window.onerror = function(){
-return true;
-};
+    window.onerror = function() {
+        return true;
+    };
 
     render = function() {
         // FPC.update(clock.getDelta());
@@ -714,7 +751,6 @@ return true;
     };
 
     init();
-
 
 
 
