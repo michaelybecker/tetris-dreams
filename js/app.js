@@ -4,47 +4,46 @@ $(function() {
 
 
 
+    // physica
     Physijs.scripts.worker = "./js/physijs_worker.js";
     Physijs.scripts.ammo = "./ammo.js";
-
-
-    //leapmotion
-
-    // var controller = new Leap.Controller().use('riggedHand').connect();
 
     var init, render, renderer, scene, camera, box;
     var lights;
     var brick1, brick1loader, brick2, brick2loader, brick3, brick3loader, brick4, brick4loader, brick5, brick5loader;
     var sphere, plane;
+    var particleGroup, emitter;
     var clock;
     var FPC, controls;
-    var composer, bloom, bokeh, glitch;
+    var composer, bokeh;
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
 
     var width = window.innerWidth,
         height = window.innerHeight;
-    var controlsEnabled = false;
 
+    var hits = 0;
+    var level = 1;
+    // ef pee es
+    var controlsEnabled = false;
     var moveForward = false;
     var moveBackward = false;
     var moveLeft = false;
     var moveRight = false;
     var canJump = false;
-
     var prevTime = performance.now();
     var velocity = new THREE.Vector3();
 
+    var gravity = -30;
     var multiplier = 200;
-
     var freezeArray = [];
 
 
 
 
     var times = 0;
-    var maxTimes = 50;
-    var dropInterval = 1000;
+    var maxTimes = 500;
+    var dropInterval = 3000;
 
     var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
 
@@ -136,12 +135,13 @@ $(function() {
         renderer = new THREE.WebGLRenderer({
             antialias: true
         });
+        renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0xFFFFFF);
         document.body.appendChild(renderer.domElement);
 
         scene = new Physijs.Scene;
-        scene.setGravity(new THREE.Vector3(0, -50, 0));
+        scene.setGravity(new THREE.Vector3(0, gravity, 0));
 
         camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
 
@@ -151,10 +151,31 @@ $(function() {
         controls = new THREE.PointerLockControls(camera);
         scene.add(controls.getObject());
 
-        //set crosshair in place
-        //set chair in place
-        $(".chair")[0].style.top = window.innerHeight / 2 + "px";
-        $(".chair")[0].style.left = window.innerWidth / 2 + "px";
+
+        // crosshair
+        var chair = document.createElement("img");
+        chair.src = "../images/crosshair.png";
+        chair.class = "chair";
+        chair.style.position = "absolute";
+        document.body.appendChild(chair);
+
+        chair.style.top = window.innerHeight / 2 + "px";
+        chair.style.left = window.innerWidth / 2 + "px";
+
+        // hit counter
+
+        var hitCounter = document.createElement("div");
+        hitCounter.class = "hitcounter";
+        hitCounter.style.position = "absolute";
+        hitCounter.style.top = window.innerHeight - 50 + "px";
+        hitCounter.style.left = window.innerWidth / 2 + "px";
+        hitCounter.style.color = "#fff";
+        hitCounter.style.fontFamily = "Raleway";
+        hitCounter.style.fontWeight = "100";
+        hitCounter.style.fontSize = "2rem";
+        document.body.appendChild(hitCounter);
+        $(hitCounter).text(hits);
+
 
         var onKeyDown = function(event) {
 
@@ -230,6 +251,8 @@ $(function() {
             renderer.setSize(window.innerWidth, window.innerHeight);
             $(".chair")[0].style.top = window.innerHeight / 2 + "px";
             $(".chair")[0].style.left = window.innerWidth / 2 + "px";
+        hitCounter.style.top = window.innerHeight - 50 + "px";
+        hitCounter.style.left = window.innerWidth / 2 + "px";
         }
 
 
@@ -254,8 +277,8 @@ $(function() {
                 var y = Math.floor((Math.random() * multiplier) + 1);
                 brick5loader.load("./JSON/R-shape.json", function(geometry) {
 
-                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
-                        color: 0xff3300
+                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
+                        color: 0x009900
                     }));
                     mesh.scale.set(2, 2, 2);
                     mesh.position.y = 100;
@@ -280,7 +303,7 @@ $(function() {
                 var y = Math.floor((Math.random() * multiplier) + 1);
                 brick5loader.load("./JSON/cube.json", function(geometry) {
 
-                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
+                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
                         color: 0x000080
                     }));
                     mesh.scale.set(2, 2, 2);
@@ -307,7 +330,7 @@ $(function() {
                 var y = Math.floor((Math.random() * multiplier) + 1);
                 brick5loader.load("./JSON/squiggly.json", function(geometry) {
 
-                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
+                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
                         color: 0x008080
                     }));
                     mesh.scale.set(2, 2, 2);
@@ -335,7 +358,7 @@ $(function() {
                 var y = Math.floor((Math.random() * multiplier) + 1);
                 brick5loader.load("./JSON/pedestal.json", function(geometry) {
 
-                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
+                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
                         color: 0xD2691E
                     }));
                     mesh.scale.set(2, 2, 2);
@@ -362,7 +385,7 @@ $(function() {
                 var y = Math.floor((Math.random() * multiplier) + 1);
                 brick5loader.load("./JSON/longline.json", function(geometry) {
 
-                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshLambertMaterial({
+                    var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
                         color: 0x800000
                     }));
                     mesh.scale.set(2, 2, 2);
@@ -437,23 +460,29 @@ $(function() {
 
         //checkerboard plane
 
-        var loader = new THREE.TextureLoader();
+        // var loader = new THREE.TextureLoader();
 
-        var planeText = loader.load("../images/checkers.gif");
-        planeText.wrapS = THREE.RepeatWrapping;
-        planeText.wrapt = THREE.RepeatWrapping;
-        planeText.repeat.set(0.01, 0.01);
-        plane = new Physijs.BoxMesh(new THREE.BoxGeometry(1000, 1, 1000), new THREE.MeshLambertMaterial({ map: planeText }), 0);
+        // var planeText = loader.load("../images/checkers.gif");
+        // planeText.wrapS = THREE.RepeatWrapping;
+        // planeText.wrapt = THREE.RepeatWrapping;
+        // planeText.repeat.set(0.01, 0.01);
+        var original = 0xcc5555;
+        plane = new Physijs.CylinderMesh(new THREE.CylinderGeometry(500, 500, 5, 34), new THREE.MeshLambertMaterial({ color: original }), 0);
         plane.rotation.x = Math.PI;
-        plane.position.set(0, -2, 0);
+        plane.position.set(0, 0, 0);
         plane.name = "plane";
+        plane.addEventListener('collision', function(other_object) {
+            other_object.dead = true;
+
+
+        });
         scene.add(plane);
 
-        lights = new THREE.PointLight(0xFFFFFF, 1);
-        lights.position.set(0, 17, 0);
+        lights = new THREE.PointLight(0xff8888, 0.2);
+        lights.position.set(0, 347, 0);
         scene.add(lights);
 
-        var light2 = new THREE.AmbientLight(0xFFFFFF, 0.5);
+        var light2 = new THREE.AmbientLight(0xFFdddd, 0.2);
         scene.add(light2);
 
         requestAnimationFrame(render);
@@ -464,48 +493,77 @@ $(function() {
         var skyArray = [];
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides.jpg"),
+            map: loader.load("../images/sides3.jpg"),
             side: THREE.BackSide
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides.jpg"),
+            map: loader.load("../images/sides3.jpg"),
             side: THREE.BackSide
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/top.jpg"),
+            map: loader.load("../images/top3.jpg"),
             side: THREE.BackSide
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/bottom.jpg"),
+            map: loader.load("../images/bottom3.jpg"),
             side: THREE.BackSide
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides.jpg"),
+            map: loader.load("../images/sides3.jpg"),
             side: THREE.BackSide
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides.jpg"),
+            map: loader.load("../images/sides3.jpg"),
             side: THREE.BackSide
         }));
 
 
         var skyMaterial = new THREE.MeshFaceMaterial(skyArray);
         var skyBox = new THREE.Mesh(skyGeometry, skyMaterial);
-        skyBox.position.y = 140;
+        skyBox.position.y = 250;
         scene.add(skyBox);
 
+
+        // particle party
+        // Create particle group and emitter
+        function initParticles() {
+            var loader = new THREE.TextureLoader();
+            particleGroup = new SPE.Group({
+                texture: {
+                    value: loader.load('../images/star1.png')
+                },
+                fog: false,
+                maxParticleCount: 8000
+            });
+
+            emitter = new SPE.Emitter({
+                type: SPE.distributions.SPHERE,
+                maxAge: 2,
+                position: {
+                    value: new THREE.Vector3(0, 70, 0),
+                    spread: new THREE.Vector3(2000, 30, 2000)
+                },
+                particleCount: 8000,
+                isStatic: true
+            });
+
+            particleGroup.addEmitter(emitter);
+            scene.add(particleGroup.mesh);
+        }
+
+        initParticles();
 
         //postprocessing
 
         var bokehPass = new THREE.BokehPass(scene, camera, {
             focus: 1,
             aperture: 0.09,
-            maxblur: 1.4,
+            maxblur: 1.1,
             width: width,
             height: height
         });
@@ -526,7 +584,7 @@ $(function() {
 
 
 
-        camera.lookAt(new THREE.Vector3(0, 100, -100));
+        camera.lookAt(new THREE.Vector3(0, 20, -100));
 
 
         // window.addEventListener('mousemove', onMouseMove, false);
@@ -552,12 +610,28 @@ $(function() {
             var intersects = raycaster.intersectObjects(scene.children);
             for (var i = 0; i < intersects.length; i++) {
 
-                if (intersects[i].object.name != "plane") {
+                if (intersects[i].object.name != "plane" && intersects[i].object.type != "Points" && !intersects[i].object.dead) {
+                    // intersects[i].object.material.color.set(0x00ff00);
 
-                    intersects[i].object.material.color.set(0x00ff00);
+                    intersects[i].object.material.transparent = true;
                     // scene.remove(intersects[i].object);
                     freezeArray.push(intersects[i].object);
 
+
+                    intersects[i].object.dead = true;
+
+                    hits++;
+                    $(hitCounter).text(hits);
+
+                    if (hits >= level * 10) {
+                        level++;
+                        dropInterval -= level * 200;
+                        multiplier += level * 15;
+                        gravity -= 10;
+                        scene.setGravity(new THREE.Vector3(0, gravity, 0));
+                        console.log("next up! Level " + level + ", dropInterval: " + dropInterval, "dropRadius: " + multiplier + ", gravity: " + gravity);
+
+                    }
 
                 }
 
@@ -566,13 +640,18 @@ $(function() {
 
             }
 
-            console.log(controls.getObject().position);
+            // console.log(controls.getObject().position);
         }, false);
 
         //end init
     };
 
 
+// bad, nasty error bandaid
+
+window.onerror = function(){
+return true;
+};
 
     render = function() {
         // FPC.update(clock.getDelta());
@@ -618,12 +697,13 @@ $(function() {
         }
 
         if (freezeArray.length > 0) {
-            freezeArray.forEach(function(i){
+            freezeArray.forEach(function(i) {
 
                 i.setLinearVelocity(new THREE.Vector3(0, 0, 0));
                 i.setAngularVelocity(new THREE.Vector3(0, 0, 0));
                 i.__dirtyPosition = true;
                 i.__dirtyRotation = true;
+                i.material.opacity = 0.5;
             });
         }
         requestAnimationFrame(render);
