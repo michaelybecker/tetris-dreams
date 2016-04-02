@@ -33,9 +33,13 @@ $(function() {
     var canJump = false;
     var prevTime = performance.now();
     var velocity = new THREE.Vector3();
-
+    var listener = new THREE.AudioListener();
+    var n1, n2, n3, n4, n5, n6, n7, n8;
+    var bgAud;
     var gravity = -20;
     var multiplier = 200;
+    var crashToll = 0;
+    var crashedArr = [];
     var freezeArray = [];
 
 
@@ -127,11 +131,24 @@ $(function() {
 
 
 
+    //audio
+
+    var notesArr = [
+        "../audio/1.ogg",
+        "../audio/2.ogg",
+        "../audio/3.ogg",
+        "../audio/4.ogg",
+        "../audio/5.ogg",
+        "../audio/6.ogg",
+        "../audio/7.ogg",
+        "../audio/8.ogg",
+    ]
+
     init = function() {
 
+
+
         clock = new THREE.Clock();
-
-
         renderer = new THREE.WebGLRenderer({
             antialias: true
         });
@@ -143,11 +160,23 @@ $(function() {
         scene = new Physijs.Scene;
         scene.setGravity(new THREE.Vector3(0, gravity, 0));
 
+
+        bgAud = new Audio('../audio/bg.ogg');
+        bgAud.addEventListener('ended', function() {
+            this.currentTime = 0;
+            this.play();
+            this.volume = 0.5;
+        }, false);
+        bgAud.play();
         camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
 
         camera.position.set(0, 0, 10);
 
         scene.add(camera);
+
+        //add audiolistener
+        camera.add(listener);
+
         controls = new THREE.PointerLockControls(camera);
         scene.add(controls.getObject());
 
@@ -192,7 +221,7 @@ $(function() {
 
         levelCounter.style.fontFamily = "Raleway";
         levelCounter.style.fontWeight = "100";
-        levelCounter.style.fontSize = "60rem";
+        levelCounter.style.fontSize = "40rem";
         levelCounter.style.textAlign = "center";
         levelCounter.style.color = "#333";
         document.body.appendChild(levelCounter);
@@ -281,8 +310,8 @@ $(function() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            $(".chair")[0].style.top = window.innerHeight / 2 + "px";
-            $(".chair")[0].style.left = window.innerWidth / 2 + "px";
+            chair.style.top = window.innerHeight / 2 + "px";
+            chair.style.left = window.innerWidth / 2 + "px";
             hitCounter.style.top = window.innerHeight - 50 + "px";
             hitCounter.style.left = window.innerWidth / 2 + "px";
         }
@@ -301,12 +330,16 @@ $(function() {
 
         brick1loader = brick2loader = brick3loader = brick4loader = brick5loader = new THREE.JSONLoader();
 
-
         function b1() {
             setTimeout(function() {
 
+
+
                 var x = Math.floor((Math.random() * multiplier) + 1);
                 var y = Math.floor((Math.random() * multiplier) + 1);
+                var audioLoader = new THREE.Audio(listener);
+                audioLoader.setRefDistance(30);
+                audioLoader.autoplay = true;
                 brick5loader.load("./JSON/R-shape.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
@@ -320,7 +353,9 @@ $(function() {
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
-
+                    mesh.add(audioLoader);
+                    audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
+                    mesh.name = "brick";
                     scene.add(mesh);
 
 
@@ -333,6 +368,9 @@ $(function() {
 
                 var x = Math.floor((Math.random() * multiplier) + 1);
                 var y = Math.floor((Math.random() * multiplier) + 1);
+                var audioLoader = new THREE.Audio(listener);
+                audioLoader.setRefDistance(30);
+                audioLoader.autoplay = true;
                 brick5loader.load("./JSON/cube.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
@@ -346,7 +384,9 @@ $(function() {
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
+                    mesh.name = "brick";
 
+                    audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
                     scene.add(mesh);
 
 
@@ -360,6 +400,9 @@ $(function() {
 
                 var x = Math.floor((Math.random() * multiplier) + 1);
                 var y = Math.floor((Math.random() * multiplier) + 1);
+                var audioLoader = new THREE.Audio(listener);
+                audioLoader.setRefDistance(30);
+                audioLoader.autoplay = true;
                 brick5loader.load("./JSON/squiggly.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
@@ -373,7 +416,9 @@ $(function() {
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
+                    mesh.name = "brick";
 
+                    audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
                     scene.add(mesh);
 
 
@@ -388,6 +433,9 @@ $(function() {
 
                 var x = Math.floor((Math.random() * multiplier) + 1);
                 var y = Math.floor((Math.random() * multiplier) + 1);
+                var audioLoader = new THREE.Audio(listener);
+                audioLoader.setRefDistance(30);
+                audioLoader.autoplay = true;
                 brick5loader.load("./JSON/pedestal.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
@@ -401,6 +449,9 @@ $(function() {
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
+                    mesh.name = "brick";
+
+                    audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
                     scene.add(mesh);
 
 
@@ -415,6 +466,9 @@ $(function() {
 
                 var x = Math.floor((Math.random() * multiplier) + 1);
                 var y = Math.floor((Math.random() * multiplier) + 1);
+                var audioLoader = new THREE.Audio(listener);
+                audioLoader.setRefDistance(30);
+                audioLoader.autoplay = true;
                 brick5loader.load("./JSON/longline.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
@@ -428,7 +482,9 @@ $(function() {
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
+                    mesh.name = "brick";
 
+                    audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
                     scene.add(mesh);
 
 
@@ -504,8 +560,19 @@ $(function() {
         plane.position.set(0, 0, 0);
         plane.name = "plane";
         plane.addEventListener('collision', function(other_object) {
-            other_object.dead = true;
 
+
+            if (!other_object.dead) {
+                other_object.dead = true;
+                crashedArr.push(other_object);
+                crashToll++
+
+            }
+
+            if (crashToll > 10) {
+                console.log("death");
+                // $(document).fadeOut();
+            }
 
         });
         scene.add(plane);
@@ -575,13 +642,17 @@ $(function() {
 
             emitter = new SPE.Emitter({
                 type: SPE.distributions.SPHERE,
-                maxAge: 2,
+                maxAge: 4,
                 position: {
-                    value: new THREE.Vector3(0, 70, 0),
+                    value: new THREE.Vector3(0, 80, 0),
                     spread: new THREE.Vector3(2000, 30, 2000)
                 },
+                opacity: [0.7],
+                size: { value: [0, 1, 0] },
+                // wiggle: {spread:20},
+                // rotation: {axis:new THREE.Vector3(1, 0, 0)},
                 particleCount: 8000,
-                isStatic: true
+                isStatic: false
             });
 
             particleGroup.addEmitter(emitter);
@@ -662,6 +733,13 @@ $(function() {
                         gravity -= 10;
                         scene.setGravity(new THREE.Vector3(0, gravity, 0));
                         console.log("next up! Level " + level + ", dropInterval: " + dropInterval, "dropRadius: " + multiplier + ", gravity: " + gravity);
+                        crashToll = 0;
+                        console.log(crashedArr);
+                        var allBricks = scene.getObjectByName('brick');
+                        for (var i = 0; i < crashedArr.length; i++) {
+                            console.log(crashedArr[i]);
+                            scene.remove(crashedArr[i]);
+                        }
                         displayLevel(level);
 
 
@@ -693,6 +771,7 @@ $(function() {
     render = function() {
         // FPC.update(clock.getDelta());
 
+        particleGroup.tick(clock.getDelta());
 
         if (controlsEnabled) {
 
@@ -743,6 +822,10 @@ $(function() {
                 i.material.opacity = 0.5;
             });
         }
+
+        // if (crashToll > 10) {
+
+        // }
         requestAnimationFrame(render);
         scene.simulate();
         composer.render();
