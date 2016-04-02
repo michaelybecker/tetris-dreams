@@ -1,3 +1,7 @@
+//to do
+// dont forget musak
+
+
 'use strict';
 $(function() {
 
@@ -37,7 +41,9 @@ $(function() {
     var n1, n2, n3, n4, n5, n6, n7, n8;
     var bgAud;
     var gravity = -20;
-    var multiplier = 200;
+    var multiplier = 100;
+    var fadeTime = 8;
+    var randomSign = (Math.round(Math.random()) * 2 - 1);
     var crashToll = 0;
     var crashedArr = [];
     var freezeArray = [];
@@ -167,7 +173,7 @@ $(function() {
             this.play();
             this.volume = 0.5;
         }, false);
-        bgAud.play();
+        // bgAud.play();
         camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
 
         camera.position.set(0, 0, 10);
@@ -335,8 +341,8 @@ $(function() {
 
 
 
-                var x = Math.floor((Math.random() * multiplier) + 1);
-                var y = Math.floor((Math.random() * multiplier) + 1);
+                var x = randomSign * Math.floor((Math.random() * multiplier) + 1);
+                var y = randomSign * Math.floor((Math.random() * multiplier) + 1);
                 var audioLoader = new THREE.Audio(listener);
                 audioLoader.setRefDistance(30);
                 audioLoader.autoplay = true;
@@ -366,8 +372,8 @@ $(function() {
         function b2() {
             setTimeout(function() {
 
-                var x = Math.floor((Math.random() * multiplier) + 1);
-                var y = Math.floor((Math.random() * multiplier) + 1);
+                var x = randomSign * Math.floor((Math.random() * multiplier) + 1);
+                var y = randomSign * Math.floor((Math.random() * multiplier) + 1);
                 var audioLoader = new THREE.Audio(listener);
                 audioLoader.setRefDistance(30);
                 audioLoader.autoplay = true;
@@ -398,8 +404,8 @@ $(function() {
         function b3() {
             setTimeout(function() {
 
-                var x = Math.floor((Math.random() * multiplier) + 1);
-                var y = Math.floor((Math.random() * multiplier) + 1);
+                var x = randomSign * Math.floor((Math.random() * multiplier) + 1);
+                var y = randomSign * Math.floor((Math.random() * multiplier) + 1);
                 var audioLoader = new THREE.Audio(listener);
                 audioLoader.setRefDistance(30);
                 audioLoader.autoplay = true;
@@ -431,8 +437,8 @@ $(function() {
         function b4() {
             setTimeout(function() {
 
-                var x = Math.floor((Math.random() * multiplier) + 1);
-                var y = Math.floor((Math.random() * multiplier) + 1);
+                var x = randomSign * Math.floor((Math.random() * multiplier) + 1);
+                var y = randomSign * Math.floor((Math.random() * multiplier) + 1);
                 var audioLoader = new THREE.Audio(listener);
                 audioLoader.setRefDistance(30);
                 audioLoader.autoplay = true;
@@ -464,8 +470,8 @@ $(function() {
         function b5() {
             setTimeout(function() {
 
-                var x = Math.floor((Math.random() * multiplier) + 1);
-                var y = Math.floor((Math.random() * multiplier) + 1);
+                var x = randomSign * Math.floor((Math.random() * multiplier) + 1);
+                var y = randomSign * Math.floor((Math.random() * multiplier) + 1);
                 var audioLoader = new THREE.Audio(listener);
                 audioLoader.setRefDistance(30);
                 audioLoader.autoplay = true;
@@ -593,32 +599,38 @@ $(function() {
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
             map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide
+            side: THREE.BackSide,
+            transparent: true
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
             map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide
+            side: THREE.BackSide,
+            transparent: true
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
             map: loader.load("../images/top3.jpg"),
-            side: THREE.BackSide
+            side: THREE.BackSide,
+            transparent: true
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
             map: loader.load("../images/bottom3.jpg"),
-            side: THREE.BackSide
+            side: THREE.BackSide,
+            transparent: true
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
             map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide
+            side: THREE.BackSide,
+            transparent: true
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
             map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide
+            side: THREE.BackSide,
+            transparent: true
         }));
 
 
@@ -728,20 +740,23 @@ $(function() {
 
                     if (hits >= level * 10) {
                         level++;
-                        dropInterval -= level * 200;
-                        multiplier += level * 15;
+                        dropInterval -= level * 400;
+                        multiplier += level * 50;
                         gravity -= 10;
                         scene.setGravity(new THREE.Vector3(0, gravity, 0));
                         console.log("next up! Level " + level + ", dropInterval: " + dropInterval, "dropRadius: " + multiplier + ", gravity: " + gravity);
                         crashToll = 0;
-                        console.log(crashedArr);
-                        var allBricks = scene.getObjectByName('brick');
-                        for (var i = 0; i < crashedArr.length; i++) {
-                            console.log(crashedArr[i]);
-                            scene.remove(crashedArr[i]);
-                        }
+                        // console.log(crashedArr);
+                        // for (var i = 0; i < crashedArr.length; i++) {
+                        //     console.log(crashedArr[i]);
+                        //     scene.remove(crashedArr[i]);
+                        // }
                         displayLevel(level);
 
+                        for (var i = 0; i < skyBox.material.materials.length; i++) {
+                            TweenLite.to(skyBox.material.materials[i], 5, { opacity: 0 });
+                        }
+                                // scene.remove(skyBox);
 
                     }
 
@@ -756,7 +771,7 @@ $(function() {
         }, false);
 
         displayLevel(level);
-        console.log(level);
+
 
         //end init
     };
@@ -815,17 +830,15 @@ $(function() {
         if (freezeArray.length > 0) {
             freezeArray.forEach(function(i) {
 
-                i.setLinearVelocity(new THREE.Vector3(0, 0, 0));
-                i.setAngularVelocity(new THREE.Vector3(0, 0, 0));
                 i.__dirtyPosition = true;
                 i.__dirtyRotation = true;
+                i.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+                i.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+
                 i.material.opacity = 0.5;
             });
         }
 
-        // if (crashToll > 10) {
-
-        // }
         requestAnimationFrame(render);
         scene.simulate();
         composer.render();
