@@ -39,7 +39,7 @@ $(function() {
     var velocity = new THREE.Vector3();
     var listener = new THREE.AudioListener();
     var n1, n2, n3, n4, n5, n6, n7, n8;
-    var bgAud;
+    var bgAud, bgAud2;
     var gravity = -20;
     var multiplier = 100;
     var fadeTime = 8;
@@ -160,7 +160,7 @@ $(function() {
         });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0xFFFFFF);
+        renderer.setClearColor(0x000000);
         document.body.appendChild(renderer.domElement);
 
         scene = new Physijs.Scene;
@@ -171,17 +171,34 @@ $(function() {
         bgAud.addEventListener('ended', function() {
             this.currentTime = 0;
             this.play();
-            this.volume = 0.5;
+            this.volume = 0.3;
         }, false);
-        // bgAud.play();
+        bgAud.play();
+        bgAud2 = new Audio('../audio/shepard.ogg');
+        bgAud2.addEventListener('ended', function() {
+            this.currentTime = 0;
+            this.play();
+            this.volume = 0.05;
+        }, false);
+        bgAud2.currentTime = 70;
+        bgAud2.play();
+
         camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
 
         camera.position.set(0, 0, 10);
 
         scene.add(camera);
 
+
+
         //add audiolistener
         camera.add(listener);
+
+        //fog
+        var fog = new THREE.Fog(0xffffff, 1, 1000);
+
+        // scene.add(fog);
+        
 
         controls = new THREE.PointerLockControls(camera);
         scene.add(controls.getObject());
@@ -349,7 +366,8 @@ $(function() {
                 brick5loader.load("./JSON/R-shape.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
-                        color: 0x009900
+                        color: 0x009900,
+                        wireframe: false
                     }));
                     mesh.scale.set(2, 2, 2);
                     mesh.position.y = 100;
@@ -380,7 +398,8 @@ $(function() {
                 brick5loader.load("./JSON/cube.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
-                        color: 0x000080
+                        color: 0x000080,
+                        wireframe: false
                     }));
                     mesh.scale.set(2, 2, 2);
                     mesh.position.y = 100;
@@ -412,7 +431,8 @@ $(function() {
                 brick5loader.load("./JSON/squiggly.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
-                        color: 0x008080
+                        color: 0x008080,
+                        wireframe: false
                     }));
                     mesh.scale.set(2, 2, 2);
                     mesh.position.y = 100;
@@ -445,7 +465,8 @@ $(function() {
                 brick5loader.load("./JSON/pedestal.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
-                        color: 0xD2691E
+                        color: 0xD2691E,
+                        wireframe: false
                     }));
                     mesh.scale.set(2, 2, 2);
                     mesh.position.y = 100;
@@ -478,7 +499,8 @@ $(function() {
                 brick5loader.load("./JSON/longline.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
-                        color: 0x800000
+                        color: 0x800000,
+                        wireframe: false
                     }));
                     mesh.scale.set(2, 2, 2);
                     mesh.position.y = 100;
@@ -560,8 +582,9 @@ $(function() {
         // planeText.wrapS = THREE.RepeatWrapping;
         // planeText.wrapt = THREE.RepeatWrapping;
         // planeText.repeat.set(0.01, 0.01);
-        var original = 0xcc5555;
+        var original = 0x111111;
         plane = new Physijs.CylinderMesh(new THREE.CylinderGeometry(500, 500, 5, 34), new THREE.MeshLambertMaterial({ color: original }), 0);
+
         plane.rotation.x = Math.PI;
         plane.position.set(0, 0, 0);
         plane.name = "plane";
@@ -583,62 +606,237 @@ $(function() {
         });
         scene.add(plane);
 
-        lights = new THREE.PointLight(0xff8888, 0.2);
-        lights.position.set(0, 347, 0);
+        lights = new THREE.PointLight(0xffffff, 1);
+        lights.position.set(0, 200, 0);
         scene.add(lights);
 
-        var light2 = new THREE.AmbientLight(0xFFdddd, 0.2);
-        scene.add(light2);
+        // var light2 = new THREE.AmbientLight(0xFFdddd, 0.2);
+        // scene.add(light2);
 
         requestAnimationFrame(render);
 
 
-        //skybox
+        // -----SKYBOXES----
+
+        //skybox1
         var skyGeometry = new THREE.BoxGeometry(700, 700, 700);
         var skyArray = [];
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide,
-            transparent: true
+            map: loader.load("../images/sides1.jpg"),
+            side: THREE.DoubleSide,
+            transparent: true,
+            needsUpdate: true
+                // color: 0xff00ff
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide,
-            transparent: true
+            map: loader.load("../images/sides1.jpg"),
+            side: THREE.DoubleSide,
+            transparent: true,
+            needsUpdate: true
+                // opacity:0.1
+                // color: 0xff00ff
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/top3.jpg"),
-            side: THREE.BackSide,
-            transparent: true
+            map: loader.load("../images/top1.jpg"),
+            side: THREE.DoubleSide,
+            transparent: true,
+            needsUpdate: true
+
+            // color: 0xff00ff
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/bottom3.jpg"),
-            side: THREE.BackSide,
-            transparent: true
+            map: loader.load("../images/bottom1.jpg"),
+            side: THREE.DoubleSide,
+            transparent: true,
+            needsUpdate: true
+                // color: 0xff00ff
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide,
-            transparent: true
+            map: loader.load("../images/sides1.jpg"),
+            side: THREE.DoubleSide,
+            transparent: true,
+            needsUpdate: true
+                // color: 0xff00ff
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide,
-            transparent: true
+            map: loader.load("../images/sides1.jpg"),
+            side: THREE.DoubleSide,
+            transparent: true,
+            needsUpdate: true
+                // color: 0xff00ff
         }));
 
 
         var skyMaterial = new THREE.MeshFaceMaterial(skyArray);
-        var skyBox = new THREE.Mesh(skyGeometry, skyMaterial);
-        skyBox.position.y = 250;
-        scene.add(skyBox);
+        // SkyMaterial.transparent = true;
+        // console.log(skyMaterial);
+        var skyBox1 = new THREE.Mesh(skyGeometry, skyMaterial);
+        skyBox1.position.y = 250;
+        scene.add(skyBox1);
 
+
+        //skybox2
+        var skyGeometry2 = new THREE.BoxGeometry(740, 740, 740);
+        var skyArray2 = [];
+        var loader = new THREE.TextureLoader();
+        skyArray2.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides2.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray2.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides2.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray2.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/top2.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray2.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/bottom2.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray2.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides2.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray2.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides2.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+
+
+        var skyMaterial2 = new THREE.MeshFaceMaterial(skyArray2);
+        var skyBox2 = new THREE.Mesh(skyGeometry2, skyMaterial2);
+        skyBox2.position.y = 245;
+        scene.add(skyBox2);
+
+
+        //skybox3
+        var skyGeometry3 = new THREE.BoxGeometry(720, 720, 720);
+        var skyArray3 = [];
+        var loader = new THREE.TextureLoader();
+        skyArray3.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides3.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray3.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides3.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray3.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/top3.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray3.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/bottom3.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray3.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides3.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray3.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides3.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+
+
+        var skyMaterial3 = new THREE.MeshFaceMaterial(skyArray3);
+        var skyBox3 = new THREE.Mesh(skyGeometry3, skyMaterial3);
+        skyBox3.position.y = 245;
+        scene.add(skyBox3);
+
+        //skybox4
+        var skyGeometry4 = new THREE.BoxGeometry(760, 760, 760);
+        var skyArray4 = [];
+        var loader = new THREE.TextureLoader();
+        skyArray4.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides4.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray4.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides4.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray4.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/top4.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray4.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/bottom4.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray4.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides4.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+        var loader = new THREE.TextureLoader();
+        skyArray4.push(new THREE.MeshBasicMaterial({
+            map: loader.load("../images/sides4.jpg"),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0
+        }));
+
+
+        var skyMaterial4 = new THREE.MeshFaceMaterial(skyArray4);
+        var skyBox4 = new THREE.Mesh(skyGeometry4, skyMaterial4);
+        skyBox4.position.y = 245;
+        scene.add(skyBox4);
 
         // particle party
         // Create particle group and emitter
@@ -649,21 +847,21 @@ $(function() {
                     value: loader.load('../images/star1.png')
                 },
                 fog: false,
-                maxParticleCount: 8000
+                maxParticleCount: 30000
             });
 
             emitter = new SPE.Emitter({
                 type: SPE.distributions.SPHERE,
                 maxAge: 4,
                 position: {
-                    value: new THREE.Vector3(0, 80, 0),
-                    spread: new THREE.Vector3(2000, 30, 2000)
+                    value: new THREE.Vector3(0, 100, 0),
+                    spread: new THREE.Vector3(1000, 30, 1000)
                 },
-                opacity: [0.7],
+                opacity: [0.9],
                 size: { value: [0, 1, 0] },
                 // wiggle: {spread:20},
                 // rotation: {axis:new THREE.Vector3(1, 0, 0)},
-                particleCount: 8000,
+                particleCount: 30000,
                 isStatic: false
             });
 
@@ -677,8 +875,8 @@ $(function() {
 
         var bokehPass = new THREE.BokehPass(scene, camera, {
             focus: 1,
-            aperture: 0.09,
-            maxblur: 1.1,
+            aperture: 0.06,
+            maxblur: 1.05,
             width: width,
             height: height
         });
@@ -728,39 +926,91 @@ $(function() {
                 if (intersects[i].object.name != "plane" && intersects[i].object.type != "Points" && !intersects[i].object.dead) {
                     // intersects[i].object.material.color.set(0x00ff00);
 
-                    intersects[i].object.material.transparent = true;
-                    // scene.remove(intersects[i].object);
+                    intersects[i].object.material.wireframe = true;
+                    // intersects[i].object.material.transparent = true;
+                    intersects[i].object.dead = true;
+
                     freezeArray.push(intersects[i].object);
 
 
-                    intersects[i].object.dead = true;
-
                     hits++;
                     $(hitCounter).text(hits);
-
-                    if (hits >= level * 10) {
-                        level++;
-                        dropInterval -= level * 400;
-                        multiplier += level * 50;
-                        gravity -= 10;
-                        scene.setGravity(new THREE.Vector3(0, gravity, 0));
-                        console.log("next up! Level " + level + ", dropInterval: " + dropInterval, "dropRadius: " + multiplier + ", gravity: " + gravity);
-                        crashToll = 0;
-                        // console.log(crashedArr);
-                        // for (var i = 0; i < crashedArr.length; i++) {
-                        //     console.log(crashedArr[i]);
-                        //     scene.remove(crashedArr[i]);
-                        // }
-                        displayLevel(level);
-
-                        for (var i = 0; i < skyBox.material.materials.length; i++) {
-                            TweenLite.to(skyBox.material.materials[i], 5, { opacity: 0 });
-                        }
-                                // scene.remove(skyBox);
-
-                    }
-
                 }
+
+                //victoree
+                if (hits >= level * 10) {
+                    dropInterval -= level * 400;
+                    multiplier += level * 30;
+                    gravity -= 30;
+                    scene.setGravity(new THREE.Vector3(0, gravity, 0));
+                    console.log("next up! Level " + level + ", dropInterval: " + dropInterval, "dropRadius: " + multiplier + ", gravity: " + gravity);
+                    crashToll = 0;
+                    console.log(crashedArr);
+                    for (var i = 0; i < crashedArr.length; i++) {
+                        console.log(crashedArr[i]);
+                        scene.remove(crashedArr[i]);
+
+                        // scene.remove(crashedArr[i]);
+                    }
+                    switch (level) {
+                        case 1:
+                            for (var i = 0; i < skyBox1.material.materials.length; i++) {
+                                TweenLite.to(skyBox1.material.materials[i], 5, { opacity: 0, onComplete: fadeBox });
+                            }
+
+                            function fadeBox() {
+
+                                console.log(level);
+
+
+                                scene.remove(skyBox1);
+                                for (var i = 0; i < skyBox3.material.materials.length; i++) {
+                                    TweenLite.to(skyBox3.material.materials[i], 3, { opacity: 1 });
+                                }
+                            }
+                            break;
+                        case 2:
+                            for (var i = 0; i < skyBox3.material.materials.length; i++) {
+                                TweenLite.to(skyBox3.material.materials[i], 5, { opacity: 0, onComplete: fadeBox2 });
+                            }
+
+                            function fadeBox2() {
+
+                                console.log(level);
+
+
+                                scene.remove(skyBox3);
+                                for (var i = 0; i < skyBox2.material.materials.length; i++) {
+                                    TweenLite.to(skyBox2.material.materials[i], 3, { opacity: 1 });
+                                }
+                            }
+
+                            break;
+                        case 3:
+                            for (var i = 0; i < skyBox2.material.materials.length; i++) {
+                                TweenLite.to(skyBox2.material.materials[i], 5, { opacity: 0, onComplete: fadeBox3 });
+                            }
+
+                            function fadeBox3() {
+
+                                console.log(level);
+
+
+                                scene.remove(skyBox2);
+                                for (var i = 0; i < skyBox4.material.materials.length; i++) {
+                                    TweenLite.to(skyBox4.material.materials[i], 3, { opacity: 1 });
+                                }
+                            }
+
+                            break;
+                        default:
+                            break;
+                    }
+                    level++;
+                    displayLevel(level);
+                }
+
+
 
 
 
@@ -769,6 +1019,8 @@ $(function() {
 
             // console.log(controls.getObject().position);
         }, false);
+
+
 
         displayLevel(level);
 
@@ -841,8 +1093,8 @@ $(function() {
 
         requestAnimationFrame(render);
         scene.simulate();
-        composer.render();
-        // renderer.render(scene, camera);
+        // composer.render();
+        renderer.render(scene, camera);
 
     };
 
