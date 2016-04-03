@@ -47,6 +47,9 @@ $(function() {
     var crashToll = 0;
     var crashedArr = [];
     var freezeArray = [];
+    var manager = new THREE.LoadingManager();
+
+
 
 
 
@@ -153,6 +156,9 @@ $(function() {
     init = function() {
 
 
+        manager.onProgress = function(item, loaded, total) {
+            console.log(item, loaded, total);
+        };
 
         clock = new THREE.Clock();
         renderer = new THREE.WebGLRenderer({
@@ -198,7 +204,7 @@ $(function() {
         var fog = new THREE.Fog(0xffffff, 1, 1000);
 
         // scene.add(fog);
-        
+
 
         controls = new THREE.PointerLockControls(camera);
         scene.add(controls.getObject());
@@ -1007,7 +1013,7 @@ $(function() {
                             break;
                     }
                     level++;
-                    displayLevel(level);
+                    // displayLevel(level);
                 }
 
 
@@ -1084,10 +1090,8 @@ $(function() {
 
                 i.__dirtyPosition = true;
                 i.__dirtyRotation = true;
-                i.setLinearVelocity(new THREE.Vector3(0, 0, 0));
-                i.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-
-                i.material.opacity = 0.5;
+                i.setLinearVelocity(new THREE.Vector3(0, 1.5, 0));
+                i.setAngularVelocity(new THREE.Vector3(0, 0.2, 0));
             });
         }
 
