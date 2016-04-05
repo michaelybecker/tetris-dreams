@@ -13,7 +13,7 @@ $(function() {
     Physijs.scripts.ammo = "./ammo.js";
 
     var init, render, renderer, scene, camera, box;
-    var lights;
+    var lights, lights2, lights3, lights4;
     var brick1, brick1loader, brick2, brick2loader, brick3, brick3loader, brick4, brick4loader, brick5, brick5loader;
     var sphere, plane;
     var particleGroup, emitter;
@@ -43,12 +43,13 @@ $(function() {
     var gravity = -20;
     var multiplier = 100;
     var fadeTime = 8;
-    var randomSign = (Math.round(Math.random()) * 2 - 1);
     var crashToll = 0;
     var crashedArr = [];
     var freezeArray = [];
     var manager = new THREE.LoadingManager();
-
+    var timelyMake;
+    var isPaused = false;
+    var isDead = false;
 
 
 
@@ -102,6 +103,9 @@ $(function() {
 
             // Ask the browser to lock the pointer
             element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+            element.exitPointerLock = element.exitPointerLock ||
+                element.mozExitPointerLock ||
+                element.webkitExitPointerLock;
 
             if (/Firefox/i.test(navigator.userAgent)) {
 
@@ -173,21 +177,24 @@ $(function() {
         scene.setGravity(new THREE.Vector3(0, gravity, 0));
 
 
-        bgAud = new Audio('../audio/bg.ogg');
+        bgAud = new Audio('../audio/theme.ogg');
         bgAud.addEventListener('ended', function() {
-            this.currentTime = 0;
-            this.play();
-            this.volume = 0.3;
-        }, false);
-        bgAud.play();
-        bgAud2 = new Audio('../audio/shepard.ogg');
-        bgAud2.addEventListener('ended', function() {
             this.currentTime = 0;
             this.play();
             this.volume = 0.05;
         }, false);
-        bgAud2.currentTime = 70;
-        bgAud2.play();
+        bgAud.volume = 0.5;
+        bgAud2 = new Audio('../audio/shepard.ogg');
+        bgAud2.addEventListener('ended', function() {
+            this.currentTime = 0;
+            this.play();
+            this.volume = 0.0;
+        }, false);
+        bgAud2.volume = 0.0;
+        bgAud2.currentTime = 30;
+        $(bgAud2).animate({ volume: 0.5 }, 6000);
+
+        // bgAud2.play();
 
         camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
 
@@ -257,6 +264,24 @@ $(function() {
         $(levelCounter).text(level);
         $(levelCounter).hide();
 
+        // Death Mask
+        var deathMask = document.createElement("div");
+        deathMask.class = "deathmask";
+        deathMask.style.position = "absolute";
+        deathMask.zIndex = 134;
+        deathMask.style.top = 0 + "px";
+        deathMask.style.left = 0 + "px";
+        deathMask.style.backgroundColor = "black";
+        deathMask.style.width = window.innerWidth + "px";
+        deathMask.style.height = window.innerHeight + "px";
+        deathMask.style.margin = 0;
+        deathMask.style.color = "white";
+        deathMask.style.textAlign = "center";
+        deathMask.innerHTML = "Awakening Awaits Us All.";
+        element.appendChild(deathMask);
+        $(deathMask).hide();
+
+
         function displayLevel(level) {
             // $(levelCounter).style.display = "inline";
             $(levelCounter).text(level);
@@ -296,6 +321,10 @@ $(function() {
                     if (canJump === true) velocity.y += 200;
                     canJump = false;
                     break;
+
+                case 80:
+                    isPaused = !isPaused;
+
 
             }
 
@@ -362,10 +391,10 @@ $(function() {
         function b1() {
             setTimeout(function() {
 
-
-
-                var x = randomSign * Math.floor((Math.random() * multiplier) + 1);
-                var y = randomSign * Math.floor((Math.random() * multiplier) + 1);
+                var randomSignX = (Math.round(Math.random()) * 2 - 1);
+                var randomSignY = (Math.round(Math.random()) * 2 - 1);
+                var x = randomSignX * Math.floor((Math.random() * multiplier) + 1);
+                var y = randomSignY * Math.floor((Math.random() * multiplier) + 1);
                 var audioLoader = new THREE.Audio(listener);
                 audioLoader.setRefDistance(30);
                 audioLoader.autoplay = true;
@@ -386,6 +415,7 @@ $(function() {
                     mesh.add(audioLoader);
                     audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
                     mesh.name = "brick";
+                    // console.log(mesh.position.x + " " + mesh.position.z);
                     scene.add(mesh);
 
 
@@ -396,8 +426,10 @@ $(function() {
         function b2() {
             setTimeout(function() {
 
-                var x = randomSign * Math.floor((Math.random() * multiplier) + 1);
-                var y = randomSign * Math.floor((Math.random() * multiplier) + 1);
+                var randomSignX = (Math.round(Math.random()) * 2 - 1);
+                var randomSignY = (Math.round(Math.random()) * 2 - 1);
+                var x = randomSignX * Math.floor((Math.random() * multiplier) + 1);
+                var y = randomSignY * Math.floor((Math.random() * multiplier) + 1);
                 var audioLoader = new THREE.Audio(listener);
                 audioLoader.setRefDistance(30);
                 audioLoader.autoplay = true;
@@ -416,7 +448,7 @@ $(function() {
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
                     mesh.name = "brick";
-
+                    // console.log(mesh.position.x + " " + mesh.position.z);
                     audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
                     scene.add(mesh);
 
@@ -429,8 +461,10 @@ $(function() {
         function b3() {
             setTimeout(function() {
 
-                var x = randomSign * Math.floor((Math.random() * multiplier) + 1);
-                var y = randomSign * Math.floor((Math.random() * multiplier) + 1);
+                var randomSignX = (Math.round(Math.random()) * 2 - 1);
+                var randomSignY = (Math.round(Math.random()) * 2 - 1);
+                var x = randomSignX * Math.floor((Math.random() * multiplier) + 1);
+                var y = randomSignY * Math.floor((Math.random() * multiplier) + 1);
                 var audioLoader = new THREE.Audio(listener);
                 audioLoader.setRefDistance(30);
                 audioLoader.autoplay = true;
@@ -449,7 +483,7 @@ $(function() {
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
                     mesh.name = "brick";
-
+                    // console.log(mesh.position.x + " " + mesh.position.z);
                     audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
                     scene.add(mesh);
 
@@ -463,8 +497,10 @@ $(function() {
         function b4() {
             setTimeout(function() {
 
-                var x = randomSign * Math.floor((Math.random() * multiplier) + 1);
-                var y = randomSign * Math.floor((Math.random() * multiplier) + 1);
+                var randomSignX = (Math.round(Math.random()) * 2 - 1);
+                var randomSignY = (Math.round(Math.random()) * 2 - 1);
+                var x = randomSignX * Math.floor((Math.random() * multiplier) + 1);
+                var y = randomSignY * Math.floor((Math.random() * multiplier) + 1);
                 var audioLoader = new THREE.Audio(listener);
                 audioLoader.setRefDistance(30);
                 audioLoader.autoplay = true;
@@ -483,7 +519,7 @@ $(function() {
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
                     mesh.name = "brick";
-
+                    // console.log(mesh.position.x + " " + mesh.position.z);
                     audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
                     scene.add(mesh);
 
@@ -497,8 +533,10 @@ $(function() {
         function b5() {
             setTimeout(function() {
 
-                var x = randomSign * Math.floor((Math.random() * multiplier) + 1);
-                var y = randomSign * Math.floor((Math.random() * multiplier) + 1);
+                var randomSignX = (Math.round(Math.random()) * 2 - 1);
+                var randomSignY = (Math.round(Math.random()) * 2 - 1);
+                var x = randomSignX * Math.floor((Math.random() * multiplier) + 1);
+                var y = randomSignY * Math.floor((Math.random() * multiplier) + 1);
                 var audioLoader = new THREE.Audio(listener);
                 audioLoader.setRefDistance(30);
                 audioLoader.autoplay = true;
@@ -512,7 +550,7 @@ $(function() {
                     mesh.position.y = 100;
                     mesh.position.x = x;
                     mesh.position.z = y;
-
+                    // console.log(mesh.position.x + " " + mesh.position.z);
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
@@ -529,7 +567,7 @@ $(function() {
 
 
 
-        var timelyMake = setInterval(function() {
+        timelyMake = setInterval(function() {
 
             function makeBrick(i) {
 
@@ -558,551 +596,612 @@ $(function() {
 
             }
 
-            var brickNum = Math.round(Math.random() * 5) + 1;
-
-            // console.log(brickNum);
-            if (brickNum % 3 == 0) {
-                makeBrick(1);
-            } else if (brickNum % 4 == 0) {
-                makeBrick(2);
-            } else if (brickNum % 5 == 0) {
-                makeBrick(3);
-            } else if (brickNum % 2 == 0) {
-                makeBrick(4);
-            } else {
-                makeBrick(5);
-            }
-            times++;
-            // console.log("time: " + times);
-            // console.log("maxtime:" + maxTimes);
-            if (times >= maxTimes) {
-                clearInterval(timelyMake);
+            if (!isPaused && !isDead) {
+                var brickNum = Math.round(Math.random() * 5) + 1;
+                if (brickNum % 3 == 0) {
+                    makeBrick(1);
+                } else if (brickNum % 4 == 0) {
+                    makeBrick(2);
+                } else if (brickNum % 5 == 0) {
+                    makeBrick(3);
+                } else if (brickNum % 2 == 0) {
+                    makeBrick(4);
+                } else {
+                    makeBrick(5);
+                }
+                times++;
+                // console.log("time: " + times);
+                // console.log("maxtime:" + maxTimes);
+                if (times >= maxTimes) {
+                    clearInterval(timelyMake);
+                }
             }
         }, dropInterval);
+
+
+        // playGame();
 
         //checkerboard plane
 
         // var loader = new THREE.TextureLoader();
 
-        // var planeText = loader.load("../images/checkers.gif");
-        // planeText.wrapS = THREE.RepeatWrapping;
-        // planeText.wrapt = THREE.RepeatWrapping;
-        // planeText.repeat.set(0.01, 0.01);
-        var original = 0x111111;
-        plane = new Physijs.CylinderMesh(new THREE.CylinderGeometry(500, 500, 5, 34), new THREE.MeshLambertMaterial({ color: original }), 0);
+        var die = function(level) {
+            isDead = true;
+            $(deathMask).fadeIn(2000);
+            console.log("you died");
+            $(bgAud2).animate({ volume: 0 }, 2000);
+            bgAud.play();
+            // switch (level) {
+            //     case 1:
+            //         for (var i = 0; i < skyBox1.material.materials.length; i++) {
+            //             TweenLite.to(skyBox1.material.materials[i], 5, { opacity: 0, onComplete: death2 });
+            //         }
+            //         break;
+            //     case 2:
+            //         for (var i = 0; i < skyBox3.material.materials.length; i++) {
+            //             TweenLite.to(skyBox3.material.materials[i], 5, { opacity: 0, onComplete: death2 });
+            //         }
+            //                             break;
+            //     case 3:
+            //         for (var i = 0; i < skyBox2.material.materials.length; i++) {
+            //             TweenLite.to(skyBox2.material.materials[i], 5, { opacity: 0, onComplete: death2 });
+            //         }
 
-        plane.rotation.x = Math.PI;
-        plane.position.set(0, 0, 0);
-        plane.name = "plane";
-        plane.addEventListener('collision', function(other_object) {
+            //     case 4:
+            //         for (var i = 0; i < skyBox4.material.materials.length; i++) {
+            //             TweenLite.to(skyBox4.material.materials[i], 5, { opacity: 0, onComplete: death2 });
+            //         }
 
-
-            if (!other_object.dead) {
-                other_object.dead = true;
-                crashedArr.push(other_object);
-                crashToll++
-
-            }
-
-            if (crashToll > 10) {
-                console.log("death");
-                // $(document).fadeOut();
-            }
-
-        });
-        scene.add(plane);
-
-        lights = new THREE.PointLight(0xffffff, 1);
-        lights.position.set(0, 200, 0);
-        scene.add(lights);
-
-        // var light2 = new THREE.AmbientLight(0xFFdddd, 0.2);
-        // scene.add(light2);
-
-        requestAnimationFrame(render);
+            //         break;
+            //     default:
+            //         break;
+        }
 
 
-        // -----SKYBOXES----
+    var original = 0xa45757;
+    plane = new Physijs.CylinderMesh(new THREE.CylinderGeometry(500, 500, 5, 34), new THREE.MeshPhongMaterial({ color: original }), 0);
 
-        //skybox1
-        var skyGeometry = new THREE.BoxGeometry(700, 700, 700);
-        var skyArray = [];
-        var loader = new THREE.TextureLoader();
-        skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides1.jpg"),
-            side: THREE.DoubleSide,
-            transparent: true,
-            needsUpdate: true
-                // color: 0xff00ff
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides1.jpg"),
-            side: THREE.DoubleSide,
-            transparent: true,
-            needsUpdate: true
-                // opacity:0.1
-                // color: 0xff00ff
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/top1.jpg"),
-            side: THREE.DoubleSide,
-            transparent: true,
-            needsUpdate: true
+    plane.rotation.x = Math.PI;
+    plane.position.set(0, 0, 0);
+    plane.name = "plane";
+    plane.addEventListener('collision', function(other_object) {
 
+
+        if (!other_object.dead) {
+            other_object.dead = true;
+            crashedArr.push(other_object);
+            crashToll++
+
+        }
+
+        if (crashToll > 11 - level * 2) {
+            console.log("death");
+            die(level);
+            // $(document).fadeOut();
+        }
+
+    });
+    scene.add(plane);
+
+    lights = new THREE.PointLight(0xffffff, .5);
+    lights.position.set(150, 200, 150);
+    scene.add(lights);
+
+    lights2 = new THREE.PointLight(0xffffff, .5);
+    lights2.position.set(150, 200, -150);
+    scene.add(lights2);
+
+    lights3 = new THREE.PointLight(0xffffff, .5);
+    lights3.position.set(-150, 200, 150);
+    scene.add(lights3);
+
+    lights4 = new THREE.PointLight(0xffffff, .5);
+    lights4.position.set(-150, 200, -150);
+    scene.add(lights4);
+
+    // var light2 = new THREE.AmbientLight(0xFFdddd, 0.2);
+    // scene.add(light2);
+
+    requestAnimationFrame(render);
+
+
+    // -----SKYBOXES----
+
+    //skybox1
+    var skyGeometry = new THREE.BoxGeometry(700, 700, 700);
+    var skyArray = [];
+    var loader = new THREE.TextureLoader();
+    skyArray.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides1.jpg"),
+        side: THREE.DoubleSide,
+        transparent: true,
+        needsUpdate: true
             // color: 0xff00ff
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/bottom1.jpg"),
-            side: THREE.DoubleSide,
-            transparent: true,
-            needsUpdate: true
-                // color: 0xff00ff
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides1.jpg"),
-            side: THREE.DoubleSide,
-            transparent: true,
-            needsUpdate: true
-                // color: 0xff00ff
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides1.jpg"),
-            side: THREE.DoubleSide,
-            transparent: true,
-            needsUpdate: true
-                // color: 0xff00ff
-        }));
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides1.jpg"),
+        side: THREE.DoubleSide,
+        transparent: true,
+        needsUpdate: true
+            // opacity:0.1
+            // color: 0xff00ff
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/top1.jpg"),
+        side: THREE.DoubleSide,
+        transparent: true,
+        needsUpdate: true
+
+        // color: 0xff00ff
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/bottom1.jpg"),
+        side: THREE.DoubleSide,
+        transparent: true,
+        needsUpdate: true
+            // color: 0xff00ff
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides1.jpg"),
+        side: THREE.DoubleSide,
+        transparent: true,
+        needsUpdate: true
+            // color: 0xff00ff
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides1.jpg"),
+        side: THREE.DoubleSide,
+        transparent: true,
+        needsUpdate: true
+            // color: 0xff00ff
+    }));
 
 
-        var skyMaterial = new THREE.MeshFaceMaterial(skyArray);
-        // SkyMaterial.transparent = true;
-        // console.log(skyMaterial);
-        var skyBox1 = new THREE.Mesh(skyGeometry, skyMaterial);
-        skyBox1.position.y = 250;
-        scene.add(skyBox1);
+    var skyMaterial = new THREE.MeshFaceMaterial(skyArray);
+    // SkyMaterial.transparent = true;
+    // console.log(skyMaterial);
+    var skyBox1 = new THREE.Mesh(skyGeometry, skyMaterial);
+    skyBox1.position.y = 250;
+    scene.add(skyBox1);
 
 
-        //skybox2
-        var skyGeometry2 = new THREE.BoxGeometry(740, 740, 740);
-        var skyArray2 = [];
-        var loader = new THREE.TextureLoader();
-        skyArray2.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides2.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray2.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides2.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray2.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/top2.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray2.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/bottom2.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray2.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides2.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray2.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides2.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
+    //skybox2
+    var skyGeometry2 = new THREE.BoxGeometry(740, 740, 740);
+    var skyArray2 = [];
+    var loader = new THREE.TextureLoader();
+    skyArray2.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides2.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray2.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides2.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray2.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/top2.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray2.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/bottom2.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray2.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides2.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray2.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides2.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
 
 
-        var skyMaterial2 = new THREE.MeshFaceMaterial(skyArray2);
-        var skyBox2 = new THREE.Mesh(skyGeometry2, skyMaterial2);
-        skyBox2.position.y = 245;
-        scene.add(skyBox2);
+    var skyMaterial2 = new THREE.MeshFaceMaterial(skyArray2);
+    var skyBox2 = new THREE.Mesh(skyGeometry2, skyMaterial2);
+    skyBox2.position.y = 245;
+    scene.add(skyBox2);
 
 
-        //skybox3
-        var skyGeometry3 = new THREE.BoxGeometry(720, 720, 720);
-        var skyArray3 = [];
+    //skybox3
+    var skyGeometry3 = new THREE.BoxGeometry(720, 720, 720);
+    var skyArray3 = [];
+    var loader = new THREE.TextureLoader();
+    skyArray3.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides3.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray3.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides3.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray3.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/top3.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray3.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/bottom3.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray3.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides3.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray3.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides3.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+
+
+    var skyMaterial3 = new THREE.MeshFaceMaterial(skyArray3);
+    var skyBox3 = new THREE.Mesh(skyGeometry3, skyMaterial3);
+    skyBox3.position.y = 245;
+    scene.add(skyBox3);
+
+    //skybox4
+    var skyGeometry4 = new THREE.BoxGeometry(760, 760, 760);
+    var skyArray4 = [];
+    var loader = new THREE.TextureLoader();
+    skyArray4.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides4.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray4.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides4.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray4.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/top4.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray4.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/bottom4.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray4.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides4.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+    var loader = new THREE.TextureLoader();
+    skyArray4.push(new THREE.MeshBasicMaterial({
+        map: loader.load("../images/sides4.jpg"),
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0
+    }));
+
+
+    var skyMaterial4 = new THREE.MeshFaceMaterial(skyArray4);
+    var skyBox4 = new THREE.Mesh(skyGeometry4, skyMaterial4);
+    skyBox4.position.y = 245;
+    scene.add(skyBox4);
+
+    // particle party
+    // Create particle group and emitter
+    function initParticles() {
         var loader = new THREE.TextureLoader();
-        skyArray3.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray3.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray3.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/top3.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray3.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/bottom3.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray3.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray3.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides3.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-
-
-        var skyMaterial3 = new THREE.MeshFaceMaterial(skyArray3);
-        var skyBox3 = new THREE.Mesh(skyGeometry3, skyMaterial3);
-        skyBox3.position.y = 245;
-        scene.add(skyBox3);
-
-        //skybox4
-        var skyGeometry4 = new THREE.BoxGeometry(760, 760, 760);
-        var skyArray4 = [];
-        var loader = new THREE.TextureLoader();
-        skyArray4.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides4.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray4.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides4.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray4.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/top4.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray4.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/bottom4.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray4.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides4.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-        var loader = new THREE.TextureLoader();
-        skyArray4.push(new THREE.MeshBasicMaterial({
-            map: loader.load("../images/sides4.jpg"),
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
-        }));
-
-
-        var skyMaterial4 = new THREE.MeshFaceMaterial(skyArray4);
-        var skyBox4 = new THREE.Mesh(skyGeometry4, skyMaterial4);
-        skyBox4.position.y = 245;
-        scene.add(skyBox4);
-
-        // particle party
-        // Create particle group and emitter
-        function initParticles() {
-            var loader = new THREE.TextureLoader();
-            particleGroup = new SPE.Group({
-                texture: {
-                    value: loader.load('../images/star1.png')
-                },
-                fog: false,
-                maxParticleCount: 30000
-            });
-
-            emitter = new SPE.Emitter({
-                type: SPE.distributions.SPHERE,
-                maxAge: 4,
-                position: {
-                    value: new THREE.Vector3(0, 100, 0),
-                    spread: new THREE.Vector3(1000, 30, 1000)
-                },
-                opacity: [0.9],
-                size: { value: [0, 1, 0] },
-                // wiggle: {spread:20},
-                // rotation: {axis:new THREE.Vector3(1, 0, 0)},
-                particleCount: 30000,
-                isStatic: false
-            });
-
-            particleGroup.addEmitter(emitter);
-            scene.add(particleGroup.mesh);
-        }
-
-        initParticles();
-
-        //postprocessing
-
-        var bokehPass = new THREE.BokehPass(scene, camera, {
-            focus: 1,
-            aperture: 0.06,
-            maxblur: 1.05,
-            width: width,
-            height: height
+        particleGroup = new SPE.Group({
+            texture: {
+                value: loader.load('../images/star1.png')
+            },
+            fog: false,
+            maxParticleCount: 30000
         });
 
-        bokehPass.renderToScreen = true;
+        emitter = new SPE.Emitter({
+            type: SPE.distributions.SPHERE,
+            maxAge: 4,
+            position: {
+                value: new THREE.Vector3(0, 100, 0),
+                spread: new THREE.Vector3(1000, 30, 1000)
+            },
+            opacity: [0.9],
+            size: { value: [0, 1, 0] },
+            // wiggle: {spread:20},
+            // rotation: {axis:new THREE.Vector3(1, 0, 0)},
+            particleCount: 30000,
+            isStatic: false
+        });
 
-        composer = new THREE.EffectComposer(renderer);
+        particleGroup.addEmitter(emitter);
+        scene.add(particleGroup.mesh);
+    }
 
-        // dot screen
-        // var dotScreenEffect = new THREE.ShaderPass(THREE.DotScreenShader);
-        // dotScreenEffect.uniforms['scale'].value = 4;
-        // dotScreenEffect.renderToScreen = true;
-        // composer.addPass(dotScreenEffect);
+    initParticles();
 
+    //postprocessing
 
-        composer.addPass(new THREE.RenderPass(scene, camera));
-        composer.addPass(bokehPass);
+    var bokehPass = new THREE.BokehPass(scene, camera, {
+        focus: 1,
+        aperture: 0.06,
+        maxblur: 1.05,
+        width: width,
+        height: height
+    });
 
+    bokehPass.renderToScreen = true;
 
+    composer = new THREE.EffectComposer(renderer);
 
-        camera.lookAt(new THREE.Vector3(0, 20, -100));
-
-
-        // window.addEventListener('mousemove', onMouseMove, false);
-
-
-        //helper plane for dragging
-        // var helplane = new THREE.Mesh(
-        //     new THREE.PlaneBufferGeometry(2000, 2000, 8, 8),
-        //     new THREE.MeshBasicMaterial({ visible: true })
-        // );
-        // scene.add(helplane);
-
-        //click raycasting
-        document.addEventListener('mousedown', function() {
-
-            var mouse = new THREE.Vector2();
-            mouse.x = 0.0;
-            mouse.y = 0.0;
-            // console.log(mouse.x, mouse.y);
-            // update the picking ray with the camera and mouse position
-            raycaster.setFromCamera(mouse, camera);
-            // calculate objects intersecting the picking ray
-            var intersects = raycaster.intersectObjects(scene.children);
-            for (var i = 0; i < intersects.length; i++) {
-
-                if (intersects[i].object.name != "plane" && intersects[i].object.type != "Points" && !intersects[i].object.dead) {
-                    // intersects[i].object.material.color.set(0x00ff00);
-
-                    intersects[i].object.material.wireframe = true;
-                    // intersects[i].object.material.transparent = true;
-                    intersects[i].object.dead = true;
-
-                    freezeArray.push(intersects[i].object);
+    // dot screen
+    // var dotScreenEffect = new THREE.ShaderPass(THREE.DotScreenShader);
+    // dotScreenEffect.uniforms['scale'].value = 4;
+    // dotScreenEffect.renderToScreen = true;
+    // composer.addPass(dotScreenEffect);
 
 
-                    hits++;
-                    $(hitCounter).text(hits);
+    composer.addPass(new THREE.RenderPass(scene, camera));
+    composer.addPass(bokehPass);
+
+
+
+    camera.lookAt(new THREE.Vector3(0, 20, -100));
+
+
+    // window.addEventListener('mousemove', onMouseMove, false);
+
+
+    //helper plane for dragging
+    // var helplane = new THREE.Mesh(
+    //     new THREE.PlaneBufferGeometry(2000, 2000, 8, 8),
+    //     new THREE.MeshBasicMaterial({ visible: true })
+    // );
+    // scene.add(helplane);
+
+    //click raycasting
+    document.addEventListener('mousedown', function() {
+
+        var mouse = new THREE.Vector2();
+        mouse.x = 0.0;
+        mouse.y = 0.0;
+        // console.log(mouse.x, mouse.y);
+        // update the picking ray with the camera and mouse position
+        raycaster.setFromCamera(mouse, camera);
+        // calculate objects intersecting the picking ray
+        var intersects = raycaster.intersectObjects(scene.children);
+        for (var i = 0; i < intersects.length; i++) {
+
+            if (intersects[i].object.name != "plane" && intersects[i].object.type != "Points" && !intersects[i].object.dead) {
+                // intersects[i].object.material.color.set(0x00ff00);
+
+                intersects[i].object.material.wireframe = true;
+                // intersects[i].object.material.transparent = true;
+                intersects[i].object.dead = true;
+
+                freezeArray.push(intersects[i].object);
+
+
+                hits++;
+                $(hitCounter).text(hits);
+            }
+
+            //victoree
+            if (hits >= level * 10) {
+                dropInterval -= level * 600;
+                multiplier += level * 45;
+                gravity -= 40;
+                scene.setGravity(new THREE.Vector3(0, gravity, 0));
+                console.log("next up! Level " + level + ", dropInterval: " + dropInterval, "dropRadius: " + multiplier + ", gravity: " + gravity);
+                crashToll = 0;
+                // console.log(crashedArr);
+                for (var i = 0; i < crashedArr.length; i++) {
+                    // console.log(crashedArr[i]);
+                    scene.remove(crashedArr[i]);
+
+                    // scene.remove(crashedArr[i]);
                 }
+                switch (level) {
+                    case 1:
+                        for (var i = 0; i < skyBox1.material.materials.length; i++) {
+                            TweenLite.to(skyBox1.material.materials[i], 5, { opacity: 0, onComplete: fadeBox });
+                        }
 
-                //victoree
-                if (hits >= level * 10) {
-                    dropInterval -= level * 400;
-                    multiplier += level * 30;
-                    gravity -= 30;
-                    scene.setGravity(new THREE.Vector3(0, gravity, 0));
-                    console.log("next up! Level " + level + ", dropInterval: " + dropInterval, "dropRadius: " + multiplier + ", gravity: " + gravity);
-                    crashToll = 0;
-                    console.log(crashedArr);
-                    for (var i = 0; i < crashedArr.length; i++) {
-                        console.log(crashedArr[i]);
-                        scene.remove(crashedArr[i]);
+                        function fadeBox() {
 
-                        // scene.remove(crashedArr[i]);
-                    }
-                    switch (level) {
-                        case 1:
-                            for (var i = 0; i < skyBox1.material.materials.length; i++) {
-                                TweenLite.to(skyBox1.material.materials[i], 5, { opacity: 0, onComplete: fadeBox });
-                            }
-
-                            function fadeBox() {
-
-                                console.log(level);
+                            // console.log(level);
 
 
-                                scene.remove(skyBox1);
-                                for (var i = 0; i < skyBox3.material.materials.length; i++) {
-                                    TweenLite.to(skyBox3.material.materials[i], 3, { opacity: 1 });
-                                }
-                            }
-                            break;
-                        case 2:
+                            scene.remove(skyBox1);
+                            plane.material.color = new THREE.Color(0xff00ff);
                             for (var i = 0; i < skyBox3.material.materials.length; i++) {
-                                TweenLite.to(skyBox3.material.materials[i], 5, { opacity: 0, onComplete: fadeBox2 });
+                                TweenLite.to(skyBox3.material.materials[i], 3, { opacity: 1 });
                             }
+                        }
+                        break;
+                    case 2:
+                        for (var i = 0; i < skyBox3.material.materials.length; i++) {
+                            TweenLite.to(skyBox3.material.materials[i], 5, { opacity: 0, onComplete: fadeBox2 });
+                        }
 
-                            function fadeBox2() {
+                        function fadeBox2() {
 
-                                console.log(level);
+                            // console.log(level);
 
 
-                                scene.remove(skyBox3);
-                                for (var i = 0; i < skyBox2.material.materials.length; i++) {
-                                    TweenLite.to(skyBox2.material.materials[i], 3, { opacity: 1 });
-                                }
-                            }
-
-                            break;
-                        case 3:
+                            scene.remove(skyBox3);
+                            plane.material.color = new THREE.Color(0x84003f);
                             for (var i = 0; i < skyBox2.material.materials.length; i++) {
-                                TweenLite.to(skyBox2.material.materials[i], 5, { opacity: 0, onComplete: fadeBox3 });
+                                TweenLite.to(skyBox2.material.materials[i], 3, { opacity: 1 });
                             }
+                        }
 
-                            function fadeBox3() {
+                        break;
+                    case 3:
+                        for (var i = 0; i < skyBox2.material.materials.length; i++) {
+                            TweenLite.to(skyBox2.material.materials[i], 5, { opacity: 0, onComplete: fadeBox3 });
+                        }
 
-                                console.log(level);
+                        function fadeBox3() {
 
-
-                                scene.remove(skyBox2);
-                                for (var i = 0; i < skyBox4.material.materials.length; i++) {
-                                    TweenLite.to(skyBox4.material.materials[i], 3, { opacity: 1 });
-                                }
+                            // console.log(level);
+                            scene.remove(skyBox2);
+                            plane.material.color = new THREE.Color(0x455666);
+                            for (var i = 0; i < skyBox4.material.materials.length; i++) {
+                                TweenLite.to(skyBox4.material.materials[i], 3, { opacity: 1 });
                             }
+                        }
 
-                            break;
-                        default:
-                            break;
-                    }
-                    level++;
-                    // displayLevel(level);
+                        break;
+                    default:
+                        break;
                 }
-
-
-
-
-
-
+                level++;
+                // displayLevel(level);
             }
 
-            // console.log(controls.getObject().position);
-        }, false);
 
 
 
-        displayLevel(level);
 
-
-        //end init
-    };
-
-
-    // bad, nasty error bandaid
-
-    window.onerror = function() {
-        return true;
-    };
-
-    render = function() {
-        // FPC.update(clock.getDelta());
-
-        particleGroup.tick(clock.getDelta());
-
-        if (controlsEnabled) {
-
-            var time = performance.now();
-            var delta = (time - prevTime) / 500;
-
-            velocity.x -= velocity.x * 10.0 * delta;
-            velocity.z -= velocity.z * 10.0 * delta;
-
-            velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
-
-            if (moveForward) velocity.z -= 400.0 * delta;
-            if (moveBackward) velocity.z += 400.0 * delta;
-
-            if (moveLeft) velocity.x -= 400.0 * delta;
-            if (moveRight) velocity.x += 400.0 * delta;
-
-            // if (isOnObject === true) {
-            //     velocity.y = Math.max(0, velocity.y);
-
-            //     canJump = true;
-            // }
-
-            controls.getObject().translateX(velocity.x * delta);
-            controls.getObject().translateY(velocity.y * delta);
-            controls.getObject().translateZ(velocity.z * delta);
-
-            if (controls.getObject().position.y < 10) {
-
-                velocity.y = 0;
-                controls.getObject().position.y = 10;
-
-                // canJump = false;
-
-            }
-
-            prevTime = time;
 
         }
 
-        if (freezeArray.length > 0) {
-            freezeArray.forEach(function(i) {
+        // console.log(controls.getObject().position);
+    }, false);
 
-                i.__dirtyPosition = true;
-                i.__dirtyRotation = true;
-                i.setLinearVelocity(new THREE.Vector3(0, 1.5, 0));
-                i.setAngularVelocity(new THREE.Vector3(0, 0.2, 0));
-            });
+
+
+    // displayLevel(level);
+
+
+    //end init
+};
+
+
+// bad, nasty error bandaid
+
+window.onerror = function() {
+    return true;
+};
+
+render = function() {
+    // FPC.update(clock.getDelta());
+
+    particleGroup.tick(clock.getDelta());
+
+    if (controlsEnabled) {
+
+        var time = performance.now();
+        var delta = (time - prevTime) / 500;
+
+        velocity.x -= velocity.x * 10.0 * delta;
+        velocity.z -= velocity.z * 10.0 * delta;
+
+        velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+
+        if (moveForward) velocity.z -= 400.0 * delta;
+        if (moveBackward) velocity.z += 400.0 * delta;
+
+        if (moveLeft) velocity.x -= 400.0 * delta;
+        if (moveRight) velocity.x += 400.0 * delta;
+
+        // if (isOnObject === true) {
+        //     velocity.y = Math.max(0, velocity.y);
+
+        //     canJump = true;
+        // }
+
+        controls.getObject().translateX(velocity.x * delta);
+        controls.getObject().translateY(velocity.y * delta);
+        controls.getObject().translateZ(velocity.z * delta);
+
+        if (controls.getObject().position.y < 10) {
+
+            velocity.y = 0;
+            controls.getObject().position.y = 10;
+
+            // canJump = false;
+
         }
 
-        requestAnimationFrame(render);
+        prevTime = time;
+
+    }
+
+    if (freezeArray.length > 0) {
+        freezeArray.forEach(function(i) {
+
+            i.__dirtyPosition = true;
+            i.__dirtyRotation = true;
+            i.setLinearVelocity(new THREE.Vector3(0, 1.5, 0));
+            i.setAngularVelocity(new THREE.Vector3(0, 0.2, 0));
+        });
+    }
+
+    requestAnimationFrame(render);
+
+    if (!isPaused) {
+
+        if (!havePointerLock) {
+            document.requestPointerLock();
+        }
+
+
+
+        bgAud2.play();
         scene.simulate();
         // composer.render();
         renderer.render(scene, camera);
+    } else {
+        bgAud2.pause();
+        document.exitPointerLock();
+    }
 
-    };
 
-    init();
+};
+
+init();
 
 
 
