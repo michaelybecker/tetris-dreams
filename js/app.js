@@ -42,6 +42,7 @@ $(function() {
     var timelyMake;
     var isPaused = false;
     var isDead = false;
+    var die;
     var isIntro = true;
 
 
@@ -151,7 +152,7 @@ $(function() {
 
     init = function() {
 
-
+        bgAud.removeEventListener('canplaythrough', init, false);
         manager.onProgress = function(item, loaded, total) {
             console.log(item, loaded, total);
         };
@@ -673,7 +674,7 @@ $(function() {
 
         // var loader = new THREE.TextureLoader();
 
-        var die = function(level) {
+         die = function(level) {
 
             isDead = true;
             document.exitPointerLock();
@@ -695,34 +696,6 @@ $(function() {
                     location.reload();
                 });
             }, 10000);
-
-            // console.log("you died");
-
-            // switch (level) {
-            //     case 1:
-            //         for (var i = 0; i < skyBox1.material.materials.length; i++) {
-            //             TweenLite.to(skyBox1.material.materials[i], 5, { opacity: 0, onComplete: death2 });
-            //         }
-            //         break;
-            //     case 2:
-            //         for (var i = 0; i < skyBox3.material.materials.length; i++) {
-            //             TweenLite.to(skyBox3.material.materials[i], 5, { opacity: 0, onComplete: death2 });
-            //         }
-            //                             break;
-            //     case 3:
-            //         for (var i = 0; i < skyBox2.material.materials.length; i++) {
-            //             TweenLite.to(skyBox2.material.materials[i], 5, { opacity: 0, onComplete: death2 });
-            //         }
-
-            //     case 4:
-            //         for (var i = 0; i < skyBox4.material.materials.length; i++) {
-            //             TweenLite.to(skyBox4.material.materials[i], 5, { opacity: 0, onComplete: death2 });
-            //         }
-
-            //         break;
-            //     default:
-            //         break;
-
 
         }
 
@@ -1203,7 +1176,7 @@ $(function() {
                 element.removeChild(introScreen);
             }, 2000);
 
-            isIntro = !isIntro;
+            isIntro = false;
         });
 
 
@@ -1292,8 +1265,5 @@ $(function() {
 
     };
 
-    bgAud.oncanplaythrough = function() {
-
-        init()
-    }
+    bgAud.addEventListener("canplaythrough", init, false);
 });
