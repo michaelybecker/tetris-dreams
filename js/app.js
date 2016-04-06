@@ -1,13 +1,3 @@
-//to do
-// dont forget musak
-
-
-'use strict';
-$(function() {
-
-
-
-
             // physica
             Physijs.scripts.worker = "./js/physijs_worker.js";
             Physijs.scripts.ammo = "./ammo.js";
@@ -699,560 +689,608 @@ $(function() {
                     $('.p5d').animate({ opacity: 1 }, 60000);
 
                     setTimeout(function() {
-                            window.addEventListener("mousedown", function() {
-                                location.reload();
-                            });
-                        }, 10000);
-
-                            // console.log("you died");
-
-                            // switch (level) {
-                            //     case 1:
-                            //         for (var i = 0; i < skyBox1.material.materials.length; i++) {
-                            //             TweenLite.to(skyBox1.material.materials[i], 5, { opacity: 0, onComplete: death2 });
-                            //         }
-                            //         break;
-                            //     case 2:
-                            //         for (var i = 0; i < skyBox3.material.materials.length; i++) {
-                            //             TweenLite.to(skyBox3.material.materials[i], 5, { opacity: 0, onComplete: death2 });
-                            //         }
-                            //                             break;
-                            //     case 3:
-                            //         for (var i = 0; i < skyBox2.material.materials.length; i++) {
-                            //             TweenLite.to(skyBox2.material.materials[i], 5, { opacity: 0, onComplete: death2 });
-                            //         }
-
-                            //     case 4:
-                            //         for (var i = 0; i < skyBox4.material.materials.length; i++) {
-                            //             TweenLite.to(skyBox4.material.materials[i], 5, { opacity: 0, onComplete: death2 });
-                            //         }
-
-                            //         break;
-                            //     default:
-                            //         break;
-
-
-                        }
-
-
-                        var original = 0xa45757; plane = new Physijs.CylinderMesh(new THREE.CylinderGeometry(500, 500, 5, 34), new THREE.MeshPhongMaterial({ color: original }), 0);
-
-                        plane.rotation.x = Math.PI; plane.position.set(0, 0, 0); plane.name = "plane"; plane.addEventListener('collision', function(other_object) {
-
-
-                            if (!other_object.dead) {
-                                other_object.dead = true;
-                                crashedArr.push(other_object);
-                                crashToll++
-
-                            }
-
-                            if (crashToll > 11 - level * 2) {
-                                // console.log("death");
-                                die(level);
-                                // $(document).fadeOut();
-                            }
-
-                        }); scene.add(plane);
-
-                        lights = new THREE.PointLight(0xffffff, .5); lights.position.set(150, 200, 150); scene.add(lights);
-
-                        lights2 = new THREE.PointLight(0xffffff, .5); lights2.position.set(150, 200, -150); scene.add(lights2);
-
-                        lights3 = new THREE.PointLight(0xffffff, .5); lights3.position.set(-150, 200, 150); scene.add(lights3);
-
-                        lights4 = new THREE.PointLight(0xffffff, .5); lights4.position.set(-150, 200, -150); scene.add(lights4);
-
-                        // var light2 = new THREE.AmbientLight(0xFFdddd, 0.2);
-                        // scene.add(light2);
-
-                        requestAnimationFrame(render);
-
-
-                        // -----SKYBOXES----
-
-                        //skybox1
-                        var skyGeometry = new THREE.BoxGeometry(700, 700, 700);
-                        var skyArray = [];
-                        var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides1.jpg"),
-                            side: THREE.DoubleSide,
-                            transparent: true,
-                            needsUpdate: true
-                                // color: 0xff00ff
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides1.jpg"),
-                            side: THREE.DoubleSide,
-                            transparent: true,
-                            needsUpdate: true
-                                // opacity:0.1
-                                // color: 0xff00ff
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/top1.jpg"),
-                            side: THREE.DoubleSide,
-                            transparent: true,
-                            needsUpdate: true
-
-                            // color: 0xff00ff
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/bottom1.jpg"),
-                            side: THREE.DoubleSide,
-                            transparent: true,
-                            needsUpdate: true
-                                // color: 0xff00ff
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides1.jpg"),
-                            side: THREE.DoubleSide,
-                            transparent: true,
-                            needsUpdate: true
-                                // color: 0xff00ff
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides1.jpg"),
-                            side: THREE.DoubleSide,
-                            transparent: true,
-                            needsUpdate: true
-                                // color: 0xff00ff
-                        }));
-
-
-                        var skyMaterial = new THREE.MeshFaceMaterial(skyArray);
-                        // SkyMaterial.transparent = true;
-                        // console.log(skyMaterial);
-                        var skyBox1 = new THREE.Mesh(skyGeometry, skyMaterial); skyBox1.position.y = 250; scene.add(skyBox1);
-
-
-                        //skybox2
-                        var skyGeometry2 = new THREE.BoxGeometry(740, 740, 740);
-                        var skyArray2 = [];
-                        var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides2.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides2.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/top2.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/bottom2.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides2.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides2.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-
-
-                        var skyMaterial2 = new THREE.MeshFaceMaterial(skyArray2);
-                        var skyBox2 = new THREE.Mesh(skyGeometry2, skyMaterial2); skyBox2.position.y = 245; scene.add(skyBox2);
-
-
-                        //skybox3
-                        var skyGeometry3 = new THREE.BoxGeometry(720, 720, 720);
-                        var skyArray3 = [];
-                        var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides3.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides3.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/top3.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/bottom3.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides3.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides3.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-
-
-                        var skyMaterial3 = new THREE.MeshFaceMaterial(skyArray3);
-                        var skyBox3 = new THREE.Mesh(skyGeometry3, skyMaterial3); skyBox3.position.y = 245; scene.add(skyBox3);
-
-                        //skybox4
-                        var skyGeometry4 = new THREE.BoxGeometry(760, 760, 760);
-                        var skyArray4 = [];
-                        var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides4.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides4.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/top4.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/bottom4.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides4.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-                        var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("./images/sides4.jpg"),
-                            side: THREE.BackSide,
-                            transparent: true,
-                            opacity: 0
-                        }));
-
-
-                        var skyMaterial4 = new THREE.MeshFaceMaterial(skyArray4);
-                        var skyBox4 = new THREE.Mesh(skyGeometry4, skyMaterial4); skyBox4.position.y = 245; scene.add(skyBox4);
-
-                        // particle party
-                        // Create particle group and emitter
-                        function initParticles() {
-                            var loader = new THREE.TextureLoader();
-                            particleGroup = new SPE.Group({
-                                texture: {
-                                    value: loader.load('./images/star1.png')
-                                },
-                                fog: false,
-                                maxParticleCount: 30000
-                            });
-
-                            emitter = new SPE.Emitter({
-                                type: SPE.distributions.SPHERE,
-                                maxAge: 4,
-                                position: {
-                                    value: new THREE.Vector3(0, 100, 0),
-                                    spread: new THREE.Vector3(1000, 30, 1000)
-                                },
-                                opacity: [0.9],
-                                size: { value: [0, 1, 0] },
-                                // wiggle: {spread:20},
-                                // rotation: {axis:new THREE.Vector3(1, 0, 0)},
-                                particleCount: 30000,
-                                isStatic: false
-                            });
-
-                            particleGroup.addEmitter(emitter);
-                            scene.add(particleGroup.mesh);
-                        }
-
-                        initParticles();
-
-                        //postprocessing
-
-                        var bokehPass = new THREE.BokehPass(scene, camera, {
-                            focus: 1,
-                            aperture: 0.02,
-                            maxblur: 1.02,
-                            width: width,
-                            height: height
+                        window.addEventListener("mousedown", function() {
+                            location.reload();
                         });
-
-                        bokehPass.renderToScreen = true;
-
-                        composer = new THREE.EffectComposer(renderer);
-
-                        // dot screen
-                        // var dotScreenEffect = new THREE.ShaderPass(THREE.DotScreenShader);
-                        // dotScreenEffect.uniforms['scale'].value = 4;
-                        // dotScreenEffect.renderToScreen = true;
-                        // composer.addPass(dotScreenEffect);
-
-
-                        composer.addPass(new THREE.RenderPass(scene, camera)); composer.addPass(bokehPass);
-
-
-
-                        camera.lookAt(new THREE.Vector3(0, 20, -100));
-
-
-                        // window.addEventListener('mousemove', onMouseMove, false);
-
-
-                        //helper plane for dragging
-                        // var helplane = new THREE.Mesh(
-                        //     new THREE.PlaneBufferGeometry(2000, 2000, 8, 8),
-                        //     new THREE.MeshBasicMaterial({ visible: true })
-                        // );
-                        // scene.add(helplane);
-
-                        //click raycasting
-                        document.addEventListener('mousedown', function() {
-
-                            var mouse = new THREE.Vector2();
-                            mouse.x = 0.0;
-                            mouse.y = 0.0;
-                            // console.log(mouse.x, mouse.y);
-                            // update the picking ray with the camera and mouse position
-                            raycaster.setFromCamera(mouse, camera);
-                            // calculate objects intersecting the picking ray
-                            var intersects = raycaster.intersectObjects(scene.children);
-                            for (var i = 0; i < intersects.length; i++) {
-
-                                if (intersects[i].object.name != "plane" && intersects[i].object.type != "Points" && !intersects[i].object.dead) {
-                                    // intersects[i].object.material.color.set(0x00ff00);
-
-                                    intersects[i].object.material.wireframe = true;
-                                    // intersects[i].object.material.transparent = true;
-                                    intersects[i].object.dead = true;
-
-                                    freezeArray.push(intersects[i].object);
-
-
-                                    hits++;
-                                    $(hitCounter).text(hits);
-                                }
-
-                                //victoree
-                                if (hits >= level * 10) {
-                                    dropInterval -= level * 600;
-                                    multiplier += level * 45;
-                                    gravity -= 40;
-                                    scene.setGravity(new THREE.Vector3(0, gravity, 0));
-                                    // console.log("next up! Level " + level + ", dropInterval: " + dropInterval, "dropRadius: " + multiplier + ", gravity: " + gravity);
-                                    crashToll = 0;
-                                    // console.log(crashedArr);
-                                    for (var i = 0; i < crashedArr.length; i++) {
-                                        // console.log(crashedArr[i]);
-                                        scene.remove(crashedArr[i]);
-
-                                        // scene.remove(crashedArr[i]);
-                                    }
-                                    switch (level) {
-                                        case 1:
-                                            for (var i = 0; i < skyBox1.material.materials.length; i++) {
-                                                TweenLite.to(skyBox1.material.materials[i], 5, { opacity: 0, onComplete: fadeBox });
-                                            }
-
-                                            function fadeBox() {
-
-                                                // console.log(level);
-
-
-                                                scene.remove(skyBox1);
-                                                plane.material.color = new THREE.Color(0xff00ff);
-                                                for (var i = 0; i < skyBox3.material.materials.length; i++) {
-                                                    TweenLite.to(skyBox3.material.materials[i], 3, { opacity: 1 });
-                                                }
-                                            }
-                                            break;
-                                        case 2:
-                                            for (var i = 0; i < skyBox3.material.materials.length; i++) {
-                                                TweenLite.to(skyBox3.material.materials[i], 5, { opacity: 0, onComplete: fadeBox2 });
-                                            }
-
-                                            function fadeBox2() {
-
-                                                // console.log(level);
-
-
-                                                scene.remove(skyBox3);
-                                                plane.material.color = new THREE.Color(0x84003f);
-                                                for (var i = 0; i < skyBox2.material.materials.length; i++) {
-                                                    TweenLite.to(skyBox2.material.materials[i], 3, { opacity: 1 });
-                                                }
-                                            }
-
-                                            break;
-                                        case 3:
-                                            for (var i = 0; i < skyBox2.material.materials.length; i++) {
-                                                TweenLite.to(skyBox2.material.materials[i], 5, { opacity: 0, onComplete: fadeBox3 });
-                                            }
-
-                                            function fadeBox3() {
-
-                                                // console.log(level);
-                                                scene.remove(skyBox2);
-                                                plane.material.color = new THREE.Color(0x455666);
-                                                for (var i = 0; i < skyBox4.material.materials.length; i++) {
-                                                    TweenLite.to(skyBox4.material.materials[i], 3, { opacity: 1 });
-                                                }
-                                            }
-
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    level++;
-                                    // displayLevel(level);
-                                }
-
-
-
-
-
-
-                            }
-
-                            // console.log(controls.getObject().position);
-                        }, false);
-
-
-
-                        // displayLevel(level);
-
-
-                        //start intro screen!
-                        $('.1p').animate({ opacity: 1 }, 10000); $('.2p').animate({ opacity: 1 }, 30000); $('.3p').animate({ opacity: 1 }, 60000); bgAud.play();
-
-
-                        $(introScreen).click(function() {
-
-                            $(bgAud).animate({ volume: 0 }, 1000);
-                            setTimeout(function() {
-                                bgAud.stop();
-                            }, 1500);
-                            $(bgAud2).animate({ volume: 0.5 }, 6000);
-                            $(introScreen).fadeOut(2000);
-                            setTimeout(function() {
-                                element.removeChild(introScreen);
-                            }, 2000);
-
-                            isIntro = !isIntro;
-                        });
-
-
-
-                        //end init
-                    };
-
-
-                    // bad, nasty error bandaid
-
-                    window.onerror = function() {
-                        return true;
-                    };
-
-                    render = function() {
-                        // FPC.update(clock.getDelta());
-
-                        particleGroup.tick(clock.getDelta());
-
-                        if (controlsEnabled) {
-
-                            var time = performance.now();
-                            var delta = (time - prevTime) / 500;
-
-                            velocity.x -= velocity.x * 10.0 * delta;
-                            velocity.z -= velocity.z * 10.0 * delta;
-
-                            velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
-
-                            if (moveForward) velocity.z -= 400.0 * delta;
-                            if (moveBackward) velocity.z += 400.0 * delta;
-
-                            if (moveLeft) velocity.x -= 400.0 * delta;
-                            if (moveRight) velocity.x += 400.0 * delta;
-
-                            // if (isOnObject === true) {
-                            //     velocity.y = Math.max(0, velocity.y);
-
-                            //     canJump = true;
-                            // }
-
-                            controls.getObject().translateX(velocity.x * delta);
-                            controls.getObject().translateY(velocity.y * delta);
-                            controls.getObject().translateZ(velocity.z * delta);
-
-                            if (controls.getObject().position.y < 10) {
-
-                                velocity.y = 0;
-                                controls.getObject().position.y = 10;
-
-                                // canJump = false;
-
-                            }
-
-                            prevTime = time;
-
-                        }
-
-                        if (freezeArray.length > 0) {
-                            freezeArray.forEach(function(i) {
-
-                                i.__dirtyPosition = true;
-                                i.__dirtyRotation = true;
-                                i.setLinearVelocity(new THREE.Vector3(0, 1.5, 0));
-                                i.setAngularVelocity(new THREE.Vector3(0, 0.2, 0));
-                            });
-                        }
-
-                        requestAnimationFrame(render);
-
-                        if (!isPaused) {
-
-                            if (!havePointerLock) {
-                                document.requestPointerLock();
-                            }
-
-                            bgAud2.play();
-                            scene.simulate();
-                            composer.render();
-                            // renderer.render(scene, camera);
-                        } else {
-                            bgAud2.pause();
-                            document.exitPointerLock();
-                        }
-
-
-                    };
-
-                    init();
-
-
+                    }, 10000);
+
+                    // console.log("you died");
+
+                    // switch (level) {
+                    //     case 1:
+                    //         for (var i = 0; i < skyBox1.material.materials.length; i++) {
+                    //             TweenLite.to(skyBox1.material.materials[i], 5, { opacity: 0, onComplete: death2 });
+                    //         }
+                    //         break;
+                    //     case 2:
+                    //         for (var i = 0; i < skyBox3.material.materials.length; i++) {
+                    //             TweenLite.to(skyBox3.material.materials[i], 5, { opacity: 0, onComplete: death2 });
+                    //         }
+                    //                             break;
+                    //     case 3:
+                    //         for (var i = 0; i < skyBox2.material.materials.length; i++) {
+                    //             TweenLite.to(skyBox2.material.materials[i], 5, { opacity: 0, onComplete: death2 });
+                    //         }
+
+                    //     case 4:
+                    //         for (var i = 0; i < skyBox4.material.materials.length; i++) {
+                    //             TweenLite.to(skyBox4.material.materials[i], 5, { opacity: 0, onComplete: death2 });
+                    //         }
+
+                    //         break;
+                    //     default:
+                    //         break;
+
+
+                }
+
+
+                var original = 0xa45757;
+                plane = new Physijs.CylinderMesh(new THREE.CylinderGeometry(500, 500, 5, 34), new THREE.MeshPhongMaterial({ color: original }), 0);
+
+                plane.rotation.x = Math.PI;
+                plane.position.set(0, 0, 0);
+                plane.name = "plane";
+                plane.addEventListener('collision', function(other_object) {
+
+
+                    if (!other_object.dead) {
+                        other_object.dead = true;
+                        crashedArr.push(other_object);
+                        crashToll++
+
+                    }
+
+                    if (crashToll > 11 - level * 2) {
+                        // console.log("death");
+                        die(level);
+                        // $(document).fadeOut();
+                    }
 
                 });
+                scene.add(plane);
+
+                lights = new THREE.PointLight(0xffffff, .5);
+                lights.position.set(150, 200, 150);
+                scene.add(lights);
+
+                lights2 = new THREE.PointLight(0xffffff, .5);
+                lights2.position.set(150, 200, -150);
+                scene.add(lights2);
+
+                lights3 = new THREE.PointLight(0xffffff, .5);
+                lights3.position.set(-150, 200, 150);
+                scene.add(lights3);
+
+                lights4 = new THREE.PointLight(0xffffff, .5);
+                lights4.position.set(-150, 200, -150);
+                scene.add(lights4);
+
+                // var light2 = new THREE.AmbientLight(0xFFdddd, 0.2);
+                // scene.add(light2);
+
+                requestAnimationFrame(render);
+
+
+                // -----SKYBOXES----
+
+                //skybox1
+                var skyGeometry = new THREE.BoxGeometry(700, 700, 700);
+                var skyArray = [];
+                var loader = new THREE.TextureLoader();
+                skyArray.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides1.jpg"),
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    needsUpdate: true
+                        // color: 0xff00ff
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides1.jpg"),
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    needsUpdate: true
+                        // opacity:0.1
+                        // color: 0xff00ff
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/top1.jpg"),
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    needsUpdate: true
+
+                    // color: 0xff00ff
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/bottom1.jpg"),
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    needsUpdate: true
+                        // color: 0xff00ff
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides1.jpg"),
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    needsUpdate: true
+                        // color: 0xff00ff
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides1.jpg"),
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    needsUpdate: true
+                        // color: 0xff00ff
+                }));
+
+
+                var skyMaterial = new THREE.MeshFaceMaterial(skyArray);
+                // SkyMaterial.transparent = true;
+                // console.log(skyMaterial);
+                var skyBox1 = new THREE.Mesh(skyGeometry, skyMaterial);
+                skyBox1.position.y = 250;
+                scene.add(skyBox1);
+
+
+                //skybox2
+                var skyGeometry2 = new THREE.BoxGeometry(740, 740, 740);
+                var skyArray2 = [];
+                var loader = new THREE.TextureLoader();
+                skyArray2.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides2.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray2.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides2.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray2.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/top2.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray2.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/bottom2.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray2.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides2.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray2.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides2.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+
+
+                var skyMaterial2 = new THREE.MeshFaceMaterial(skyArray2);
+                var skyBox2 = new THREE.Mesh(skyGeometry2, skyMaterial2);
+                skyBox2.position.y = 245;
+                scene.add(skyBox2);
+
+
+                //skybox3
+                var skyGeometry3 = new THREE.BoxGeometry(720, 720, 720);
+                var skyArray3 = [];
+                var loader = new THREE.TextureLoader();
+                skyArray3.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides3.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray3.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides3.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray3.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/top3.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray3.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/bottom3.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray3.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides3.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray3.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides3.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+
+
+                var skyMaterial3 = new THREE.MeshFaceMaterial(skyArray3);
+                var skyBox3 = new THREE.Mesh(skyGeometry3, skyMaterial3);
+                skyBox3.position.y = 245;
+                scene.add(skyBox3);
+
+                //skybox4
+                var skyGeometry4 = new THREE.BoxGeometry(760, 760, 760);
+                var skyArray4 = [];
+                var loader = new THREE.TextureLoader();
+                skyArray4.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides4.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray4.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides4.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray4.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/top4.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray4.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/bottom4.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray4.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides4.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+                var loader = new THREE.TextureLoader();
+                skyArray4.push(new THREE.MeshBasicMaterial({
+                    map: loader.load("./images/sides4.jpg"),
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0
+                }));
+
+
+                var skyMaterial4 = new THREE.MeshFaceMaterial(skyArray4);
+                var skyBox4 = new THREE.Mesh(skyGeometry4, skyMaterial4);
+                skyBox4.position.y = 245;
+                scene.add(skyBox4);
+
+                // particle party
+                // Create particle group and emitter
+                function initParticles() {
+                    var loader = new THREE.TextureLoader();
+                    particleGroup = new SPE.Group({
+                        texture: {
+                            value: loader.load('./images/star1.png')
+                        },
+                        fog: false,
+                        maxParticleCount: 30000
+                    });
+
+                    emitter = new SPE.Emitter({
+                        type: SPE.distributions.SPHERE,
+                        maxAge: 4,
+                        position: {
+                            value: new THREE.Vector3(0, 100, 0),
+                            spread: new THREE.Vector3(1000, 30, 1000)
+                        },
+                        opacity: [0.9],
+                        size: { value: [0, 1, 0] },
+                        // wiggle: {spread:20},
+                        // rotation: {axis:new THREE.Vector3(1, 0, 0)},
+                        particleCount: 30000,
+                        isStatic: false
+                    });
+
+                    particleGroup.addEmitter(emitter);
+                    scene.add(particleGroup.mesh);
+                }
+
+                initParticles();
+
+                //postprocessing
+
+                var bokehPass = new THREE.BokehPass(scene, camera, {
+                    focus: 1,
+                    aperture: 0.02,
+                    maxblur: 1.02,
+                    width: width,
+                    height: height
+                });
+
+                bokehPass.renderToScreen = true;
+
+                composer = new THREE.EffectComposer(renderer);
+
+                // dot screen
+                // var dotScreenEffect = new THREE.ShaderPass(THREE.DotScreenShader);
+                // dotScreenEffect.uniforms['scale'].value = 4;
+                // dotScreenEffect.renderToScreen = true;
+                // composer.addPass(dotScreenEffect);
+
+
+                composer.addPass(new THREE.RenderPass(scene, camera));
+                composer.addPass(bokehPass);
+
+
+
+                camera.lookAt(new THREE.Vector3(0, 20, -100));
+
+
+                // window.addEventListener('mousemove', onMouseMove, false);
+
+
+                //helper plane for dragging
+                // var helplane = new THREE.Mesh(
+                //     new THREE.PlaneBufferGeometry(2000, 2000, 8, 8),
+                //     new THREE.MeshBasicMaterial({ visible: true })
+                // );
+                // scene.add(helplane);
+
+                //click raycasting
+                document.addEventListener('mousedown', function() {
+
+                    var mouse = new THREE.Vector2();
+                    mouse.x = 0.0;
+                    mouse.y = 0.0;
+                    // console.log(mouse.x, mouse.y);
+                    // update the picking ray with the camera and mouse position
+                    raycaster.setFromCamera(mouse, camera);
+                    // calculate objects intersecting the picking ray
+                    var intersects = raycaster.intersectObjects(scene.children);
+                    for (var i = 0; i < intersects.length; i++) {
+
+                        if (intersects[i].object.name != "plane" && intersects[i].object.type != "Points" && !intersects[i].object.dead) {
+                            // intersects[i].object.material.color.set(0x00ff00);
+
+                            intersects[i].object.material.wireframe = true;
+                            // intersects[i].object.material.transparent = true;
+                            intersects[i].object.dead = true;
+
+                            freezeArray.push(intersects[i].object);
+
+
+                            hits++;
+                            $(hitCounter).text(hits);
+                        }
+
+                        //victoree
+                        if (hits >= level * 10) {
+                            dropInterval -= level * 600;
+                            multiplier += level * 45;
+                            gravity -= 40;
+                            scene.setGravity(new THREE.Vector3(0, gravity, 0));
+                            // console.log("next up! Level " + level + ", dropInterval: " + dropInterval, "dropRadius: " + multiplier + ", gravity: " + gravity);
+                            crashToll = 0;
+                            // console.log(crashedArr);
+                            for (var i = 0; i < crashedArr.length; i++) {
+                                // console.log(crashedArr[i]);
+                                scene.remove(crashedArr[i]);
+
+                                // scene.remove(crashedArr[i]);
+                            }
+                            switch (level) {
+                                case 1:
+                                    for (var i = 0; i < skyBox1.material.materials.length; i++) {
+                                        TweenLite.to(skyBox1.material.materials[i], 5, { opacity: 0, onComplete: fadeBox });
+                                    }
+
+                                    function fadeBox() {
+
+                                        // console.log(level);
+
+
+                                        scene.remove(skyBox1);
+                                        plane.material.color = new THREE.Color(0xff00ff);
+                                        for (var i = 0; i < skyBox3.material.materials.length; i++) {
+                                            TweenLite.to(skyBox3.material.materials[i], 3, { opacity: 1 });
+                                        }
+                                    }
+                                    break;
+                                case 2:
+                                    for (var i = 0; i < skyBox3.material.materials.length; i++) {
+                                        TweenLite.to(skyBox3.material.materials[i], 5, { opacity: 0, onComplete: fadeBox2 });
+                                    }
+
+                                    function fadeBox2() {
+
+                                        // console.log(level);
+
+
+                                        scene.remove(skyBox3);
+                                        plane.material.color = new THREE.Color(0x84003f);
+                                        for (var i = 0; i < skyBox2.material.materials.length; i++) {
+                                            TweenLite.to(skyBox2.material.materials[i], 3, { opacity: 1 });
+                                        }
+                                    }
+
+                                    break;
+                                case 3:
+                                    for (var i = 0; i < skyBox2.material.materials.length; i++) {
+                                        TweenLite.to(skyBox2.material.materials[i], 5, { opacity: 0, onComplete: fadeBox3 });
+                                    }
+
+                                    function fadeBox3() {
+
+                                        // console.log(level);
+                                        scene.remove(skyBox2);
+                                        plane.material.color = new THREE.Color(0x455666);
+                                        for (var i = 0; i < skyBox4.material.materials.length; i++) {
+                                            TweenLite.to(skyBox4.material.materials[i], 3, { opacity: 1 });
+                                        }
+                                    }
+
+                                    break;
+                                default:
+                                    break;
+                            }
+                            level++;
+                            // displayLevel(level);
+                        }
+
+
+
+
+
+
+                    }
+
+                    // console.log(controls.getObject().position);
+                }, false);
+
+
+
+                // displayLevel(level);
+
+
+                //start intro screen!
+                $('.1p').animate({ opacity: 1 }, 10000);
+                $('.2p').animate({ opacity: 1 }, 30000);
+                $('.3p').animate({ opacity: 1 }, 60000);
+                bgAud.play();
+
+
+                $(introScreen).click(function() {
+
+                    $(bgAud).animate({ volume: 0 }, 1000);
+                    setTimeout(function() {
+                        bgAud.stop();
+                    }, 1500);
+                    $(bgAud2).animate({ volume: 0.5 }, 6000);
+                    $(introScreen).fadeOut(2000);
+                    setTimeout(function() {
+                        element.removeChild(introScreen);
+                    }, 2000);
+
+                    isIntro = !isIntro;
+                });
+
+
+
+                //end init
+            };
+
+
+            // bad, nasty error bandaid
+
+            window.onerror = function() {
+                return true;
+            };
+
+            render = function() {
+                // FPC.update(clock.getDelta());
+
+                particleGroup.tick(clock.getDelta());
+
+                if (controlsEnabled) {
+
+                    var time = performance.now();
+                    var delta = (time - prevTime) / 500;
+
+                    velocity.x -= velocity.x * 10.0 * delta;
+                    velocity.z -= velocity.z * 10.0 * delta;
+
+                    velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+
+                    if (moveForward) velocity.z -= 400.0 * delta;
+                    if (moveBackward) velocity.z += 400.0 * delta;
+
+                    if (moveLeft) velocity.x -= 400.0 * delta;
+                    if (moveRight) velocity.x += 400.0 * delta;
+
+                    // if (isOnObject === true) {
+                    //     velocity.y = Math.max(0, velocity.y);
+
+                    //     canJump = true;
+                    // }
+
+                    controls.getObject().translateX(velocity.x * delta);
+                    controls.getObject().translateY(velocity.y * delta);
+                    controls.getObject().translateZ(velocity.z * delta);
+
+                    if (controls.getObject().position.y < 10) {
+
+                        velocity.y = 0;
+                        controls.getObject().position.y = 10;
+
+                        // canJump = false;
+
+                    }
+
+                    prevTime = time;
+
+                }
+
+                if (freezeArray.length > 0) {
+                    freezeArray.forEach(function(i) {
+
+                        i.__dirtyPosition = true;
+                        i.__dirtyRotation = true;
+                        i.setLinearVelocity(new THREE.Vector3(0, 1.5, 0));
+                        i.setAngularVelocity(new THREE.Vector3(0, 0.2, 0));
+                    });
+                }
+
+                requestAnimationFrame(render);
+
+                if (!isPaused) {
+
+                    if (!havePointerLock) {
+                        document.requestPointerLock();
+                    }
+
+                    bgAud2.play();
+                    scene.simulate();
+                    composer.render();
+                    // renderer.render(scene, camera);
+                } else {
+                    bgAud2.pause();
+                    document.exitPointerLock();
+                }
+
+
+            };
+
+            $(function() {
+                init()
+
+            });
