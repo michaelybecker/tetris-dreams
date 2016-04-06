@@ -177,7 +177,7 @@ $(function() {
                 scene.setGravity(new THREE.Vector3(0, gravity, 0));
 
 
-                bgAud = new Audio('/projects/tetris-horror/audio/theme.ogg');
+                bgAud = new Audio('http://michaelhazani.com/projects/tetris-horror/audio/theme.ogg');
                 bgAud.addEventListener('ended', function() {
                     this.currentTime = 0;
                     this.play();
