@@ -177,7 +177,7 @@ $(function() {
                 scene.setGravity(new THREE.Vector3(0, gravity, 0));
 
 
-                bgAud = new Audio('../audio/theme.ogg');
+                bgAud = new Audio('/audio/theme.ogg');
                 bgAud.addEventListener('ended', function() {
                     this.currentTime = 0;
                     this.play();
