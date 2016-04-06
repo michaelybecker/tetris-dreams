@@ -679,9 +679,9 @@ $(function() {
             isDead = true;
             document.exitPointerLock();
             $(bgAud2).animate({ volume: 0 }, 2000);
-            bgAud.currentTime = 0;
-            bgAud.volume = 1;
-            bgAud.play();
+            // bgAud.currentTime = 0;
+            // bgAud.volume = 1;
+            // bgAud.play();
             element.appendChild(blackScreen);
 
             $(blackScreen).animate({ opacity: 1 }, 2000);
