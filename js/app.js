@@ -313,7 +313,7 @@ $(function() {
 
                 var introText = document.createElement("div");
 
-                introText.innerHTML = "<div><p class='1p' style='opacity: 0'>\"..But nowadays, the populace at large isn't aware of our discoveries since " +
+                introText.innerHTML = "<div><p class='1p' style='opacity: 0'>\"...But nowadays, the populace at large isn't aware of our discoveries since " +
                     "we first encountered the Tetris Effect - <br>chronic, virtually irreversible phenomena such as neural hijacking, pattern-oriented compulsive obsessions or post" +
                     "-Pavlovian conditioning...</p><br><p class='2p' style='opacity: 0'>No one wants to be told about thousands of cases, women and men " +
                     "around the world <br> who spend their lives confined to padded cells, doomed to play a neverending game in their heads ad infinitum, <br> sans loved ones, " +
@@ -965,7 +965,7 @@ $(function() {
                             var loader = new THREE.TextureLoader();
                             particleGroup = new SPE.Group({
                                 texture: {
-                                    value: loader.load('../images/star1.png')
+                                    value: loader.load('./images/star1.png')
                                 },
                                 fog: false,
                                 maxParticleCount: 30000
