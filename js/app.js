@@ -147,14 +147,14 @@ $(function() {
             //audio
 
             var notesArr = [
-                "../audio/1.ogg",
-                "../audio/2.ogg",
-                "../audio/3.ogg",
-                "../audio/4.ogg",
-                "../audio/5.ogg",
-                "../audio/6.ogg",
-                "../audio/7.ogg",
-                "../audio/8.ogg",
+                "./audio/1.ogg",
+                "./audio/2.ogg",
+                "./audio/3.ogg",
+                "./audio/4.ogg",
+                "./audio/5.ogg",
+                "./audio/6.ogg",
+                "./audio/7.ogg",
+                "./audio/8.ogg",
             ]
 
             init = function() {
@@ -177,14 +177,14 @@ $(function() {
                 scene.setGravity(new THREE.Vector3(0, gravity, 0));
 
 
-                bgAud = new Audio('http://michaelhazani.com/projects/tetris-horror/audio/theme.ogg');
+                bgAud = new Audio('./audio/theme.ogg');
                 bgAud.addEventListener('ended', function() {
                     this.currentTime = 0;
                     this.play();
                     this.volume = 1;
                 }, false);
                 bgAud.volume = 1;
-                bgAud2 = new Audio('/../audio/shepard.ogg');
+                bgAud2 = new Audio('./audio/shepard.ogg');
                 bgAud2.addEventListener('ended', function() {
                     this.currentTime = 0;
                     this.play();
@@ -217,7 +217,7 @@ $(function() {
 
                 // crosshair
                 var chair = document.createElement("img");
-                chair.src = "../images/crosshair.png";
+                chair.src = "./images/crosshair.png";
                 chair.class = "chair";
                 chair.style.position = "absolute";
                 document.body.appendChild(chair);
@@ -313,7 +313,7 @@ $(function() {
 
                 var introText = document.createElement("div");
 
-                introText.innerHTML = "<div><p class='1p' style='opacity: 0'>\"...But nowadays, the populace at large isn't aware of our discoveries since " +
+                introText.innerHTML = "<div><p class='1p' style='opacity: 0'>\"..But nowadays, the populace at large isn't aware of our discoveries since " +
                     "we first encountered the Tetris Effect - <br>chronic, virtually irreversible phenomena such as neural hijacking, pattern-oriented compulsive obsessions or post" +
                     "-Pavlovian conditioning...</p><br><p class='2p' style='opacity: 0'>No one wants to be told about thousands of cases, women and men " +
                     "around the world <br> who spend their lives confined to padded cells, doomed to play a neverending game in their heads ad infinitum, <br> sans loved ones, " +
@@ -775,14 +775,14 @@ $(function() {
                         var skyGeometry = new THREE.BoxGeometry(700, 700, 700);
                         var skyArray = [];
                         var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides1.jpg"),
+                            map: loader.load("./images/sides1.jpg"),
                             side: THREE.DoubleSide,
                             transparent: true,
                             needsUpdate: true
                                 // color: 0xff00ff
                         }));
                         var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides1.jpg"),
+                            map: loader.load("./images/sides1.jpg"),
                             side: THREE.DoubleSide,
                             transparent: true,
                             needsUpdate: true
@@ -790,7 +790,7 @@ $(function() {
                                 // color: 0xff00ff
                         }));
                         var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/top1.jpg"),
+                            map: loader.load("./images/top1.jpg"),
                             side: THREE.DoubleSide,
                             transparent: true,
                             needsUpdate: true
@@ -798,21 +798,21 @@ $(function() {
                             // color: 0xff00ff
                         }));
                         var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/bottom1.jpg"),
+                            map: loader.load("./images/bottom1.jpg"),
                             side: THREE.DoubleSide,
                             transparent: true,
                             needsUpdate: true
                                 // color: 0xff00ff
                         }));
                         var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides1.jpg"),
+                            map: loader.load("./images/sides1.jpg"),
                             side: THREE.DoubleSide,
                             transparent: true,
                             needsUpdate: true
                                 // color: 0xff00ff
                         }));
                         var loader = new THREE.TextureLoader(); skyArray.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides1.jpg"),
+                            map: loader.load("./images/sides1.jpg"),
                             side: THREE.DoubleSide,
                             transparent: true,
                             needsUpdate: true
@@ -830,37 +830,37 @@ $(function() {
                         var skyGeometry2 = new THREE.BoxGeometry(740, 740, 740);
                         var skyArray2 = [];
                         var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides2.jpg"),
+                            map: loader.load("./images/sides2.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides2.jpg"),
+                            map: loader.load("./images/sides2.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/top2.jpg"),
+                            map: loader.load("./images/top2.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/bottom2.jpg"),
+                            map: loader.load("./images/bottom2.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides2.jpg"),
+                            map: loader.load("./images/sides2.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray2.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides2.jpg"),
+                            map: loader.load("./images/sides2.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
@@ -875,37 +875,37 @@ $(function() {
                         var skyGeometry3 = new THREE.BoxGeometry(720, 720, 720);
                         var skyArray3 = [];
                         var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides3.jpg"),
+                            map: loader.load("./images/sides3.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides3.jpg"),
+                            map: loader.load("./images/sides3.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/top3.jpg"),
+                            map: loader.load("./images/top3.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/bottom3.jpg"),
+                            map: loader.load("./images/bottom3.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides3.jpg"),
+                            map: loader.load("./images/sides3.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray3.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides3.jpg"),
+                            map: loader.load("./images/sides3.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
@@ -919,37 +919,37 @@ $(function() {
                         var skyGeometry4 = new THREE.BoxGeometry(760, 760, 760);
                         var skyArray4 = [];
                         var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides4.jpg"),
+                            map: loader.load("./images/sides4.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides4.jpg"),
+                            map: loader.load("./images/sides4.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/top4.jpg"),
+                            map: loader.load("./images/top4.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/bottom4.jpg"),
+                            map: loader.load("./images/bottom4.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides4.jpg"),
+                            map: loader.load("./images/sides4.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
                         }));
                         var loader = new THREE.TextureLoader(); skyArray4.push(new THREE.MeshBasicMaterial({
-                            map: loader.load("../images/sides4.jpg"),
+                            map: loader.load("./images/sides4.jpg"),
                             side: THREE.BackSide,
                             transparent: true,
                             opacity: 0
