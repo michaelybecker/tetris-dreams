@@ -184,7 +184,7 @@ $(function() {
                     this.volume = 1;
                 }, false);
                 bgAud.volume = 1;
-                bgAud2 = new Audio('../audio/shepard.ogg');
+                bgAud2 = new Audio('/../audio/shepard.ogg');
                 bgAud2.addEventListener('ended', function() {
                     this.currentTime = 0;
                     this.play();
