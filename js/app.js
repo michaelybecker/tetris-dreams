@@ -1,5 +1,3 @@
-// TODO: Modularize?
-
 $(function() {
     // physica
     Physijs.scripts.worker = "./js/physijs_worker.js";
@@ -29,7 +27,6 @@ $(function() {
     var moveRight = false;
     var canJump = false;
 
-
     var velocity = new THREE.Vector3(); 
     var listener = new THREE.AudioListener();
     var n1, n2, n3, n4, n5, n6, n7, n8;
@@ -49,10 +46,6 @@ $(function() {
     var isDead = false;
     var die;
     var isIntro = true;
-
-
-
-
 
     var times = 0;
     var maxTimes = 500;
@@ -179,7 +172,7 @@ $(function() {
         shepardAud.volume = 0.0;
         shepardAud.currentTime = 30;
 
-        camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
+        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
         camera.position.set(0, 0, 10);
 
         scene.add(camera);
@@ -1019,7 +1012,7 @@ $(function() {
                     $(hitCounter).text(hits);
                 }
 
-                //victory
+                //Win
                 if (hits >= level * 10) {
                     dropInterval -= level * 600;
                     multiplier += level * 45;
@@ -1132,7 +1125,7 @@ $(function() {
                 var inst = document.createElement("img");
                 inst.style.position = "absolute";
                 inst.style.width = "35%";
-                inst.style.top = "65%";
+                inst.style.top = "80%";
                 inst.style.left = "32.5%";
                 inst.style.opacity = "0";
                 inst.src = "./images/inst.png";
