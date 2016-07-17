@@ -9,7 +9,9 @@ $(function() {
     var lights, lights2, lights3, lights4;
     var brickLoader;
     var plane;
-    // var particleGroup, emitter, clock, prevTime = performance.now();
+    // var particleGroup, emitter;
+    var clock;
+    var prevTime = performance.now();
     var controls;
     var composer, bokeh;
     var raycaster = new THREE.Raycaster();
@@ -1145,7 +1147,7 @@ $(function() {
             })();
 
             //taunt
-            (function taunt() {
+            (function taunt(){
                 var tauntArr = [
                     "this is better than your reality",
                     "trust gravity",
@@ -1180,7 +1182,7 @@ $(function() {
                 document.body.appendChild(tauntSpan);
 
                 var tauntInt = setInterval(function() {
-                    var ranTaunt = tauntArr[Math.floor(Math.random() * tauntArr.length)];
+                var ranTaunt = tauntArr[Math.floor(Math.random() * tauntArr.length)];
 
                     $(tauntSpan).text(ranTaunt);
                     $(tauntSpan).animate({
@@ -1191,7 +1193,7 @@ $(function() {
                         }, 5000);
                     });
                 }, 15000);
-            })();
+              })();
 
             isIntro = false;
         });
@@ -1210,7 +1212,7 @@ $(function() {
     render = function() {
 
         // particleGroup.tick(clock.getDelta());
-        // prevTime = time;
+
         if (controlsEnabled) {
 
             var time = performance.now();
@@ -1235,11 +1237,18 @@ $(function() {
 
                 velocity.y = 0;
                 controls.getObject().position.y = 10;
+
+                // canJump = false;
+
             }
+
+            prevTime = time;
+
         }
 
         if (freezeArray.length > 0) {
             freezeArray.forEach(function(i) {
+
                 i.__dirtyPosition = true;
                 i.__dirtyRotation = true;
                 i.setLinearVelocity(new THREE.Vector3(0, 1.5, 0));
@@ -1250,6 +1259,7 @@ $(function() {
         reqFr = requestAnimationFrame(render);
 
         if (!isPaused) {
+
             if (!havePointerLock) {
                 document.requestPointerLock();
             }
@@ -1262,6 +1272,8 @@ $(function() {
             shepardAud.pause();
             document.exitPointerLock();
         }
+
+
     };
 
     themeAud.addEventListener("canplaythrough", init, false);
