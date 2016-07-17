@@ -21,8 +21,8 @@ THREE.PointerLockControls = function ( camera ) {
 
 		if ( scope.enabled === false ) return;
 
-		var movementX = event.movementX || event.mozMovementX || 0;
-		var movementY = event.movementY || event.mozMovementY || 0;
+		var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+		var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
 		yawObject.rotation.y -= movementX * 0.002;
 		pitchObject.rotation.x -= movementY * 0.002;
@@ -35,7 +35,7 @@ THREE.PointerLockControls = function ( camera ) {
 
 		document.removeEventListener( 'mousemove', onMouseMove, false );
 
-	}
+	};
 
 	document.addEventListener( 'mousemove', onMouseMove, false );
 
@@ -62,7 +62,7 @@ THREE.PointerLockControls = function ( camera ) {
 
 			return v;
 
-		}
+		};
 
 	}();
 

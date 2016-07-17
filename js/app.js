@@ -1,49 +1,53 @@
+// TODO: Modularize?
+
 $(function() {
     // physica
     Physijs.scripts.worker = "./js/physijs_worker.js";
     Physijs.scripts.ammo = "./ammo.js";
 
-    var init, render, renderer, scene, camera, box;
+    var init, render, renderer, reqFr, scene, camera, box;
     var lights, lights2, lights3, lights4;
-    var brick1, brick1loader, brick2, brick2loader, brick3, brick3loader, brick4, brick4loader, brick5, brick5loader;
-    var sphere, plane;
-    var particleGroup, emitter;
-    var clock;
-    var FPC, controls;
+    var brickLoader;
+    var plane;
+    // var particleGroup, emitter, clock, prevTime = performance.now();
+    var controls;
     var composer, bokeh;
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
-
     var width = window.innerWidth,
         height = window.innerHeight;
-
     var hits = 0;
     var level = 1;
-    // ef pee es
+
+    // FPS
     var controlsEnabled = false;
     var moveForward = false;
     var moveBackward = false;
     var moveLeft = false;
     var moveRight = false;
     var canJump = false;
-    var prevTime = performance.now();
-    var velocity = new THREE.Vector3();
+
+
+    var velocity = new THREE.Vector3(); 
     var listener = new THREE.AudioListener();
     var n1, n2, n3, n4, n5, n6, n7, n8;
-    var bgAud = new Audio('./audio/theme.ogg');;
-    var bgAud2 = new Audio('./audio/shepard.ogg');
+    var themeAud = new Audio('./audio/theme.ogg');
+    var shepardAud = new Audio('./audio/shepard.ogg');
+    var endFX = new Audio('./audio/endfx.ogg');
+    var hitSound;
+    var crashFX;
     var gravity = -20;
     var multiplier = 100;
     var fadeTime = 8;
     var crashToll = 0;
     var crashedArr = [];
     var freezeArray = [];
-    var manager = new THREE.LoadingManager();
     var timelyMake;
     var isPaused = false;
     var isDead = false;
     var die;
     var isIntro = true;
+
 
 
 
@@ -69,19 +73,11 @@ $(function() {
             } else {
 
                 controls.enabled = false;
-
-
-                // instructions.style.display = '';
-
             }
 
         };
 
-        var pointerlockerror = function(event) {
-
-            // instructions.style.display = '';
-
-        };
+        var pointerlockerror = function(event) {};
 
         // Hook pointer lock state change events
         document.addEventListener('pointerlockchange', pointerlockchange, false);
@@ -122,23 +118,16 @@ $(function() {
                 element.requestFullscreen();
 
             } else {
-
                 element.requestPointerLock();
-
             }
-
         }, false);
-
     } else {
-
         document.body.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
-
     }
 
 
 
     //audio
-
     var notesArr = [
         "./audio/1.ogg",
         "./audio/2.ogg",
@@ -152,10 +141,20 @@ $(function() {
 
     init = function() {
 
-        bgAud.removeEventListener('canplaythrough', init, false);
+        themeAud.removeEventListener('canplaythrough', init, false);
+        var manager = new THREE.LoadingManager();
         manager.onProgress = function(item, loaded, total) {
             console.log(item, loaded, total);
+            console.log("progress");
         };
+        manager.onLoad = function() {
+            console.log("done");
+        };
+        manager.onError = function(url) {
+
+            console.warn("Loading Error", url);
+
+        }
 
         clock = new THREE.Clock();
         renderer = new THREE.WebGLRenderer({
@@ -169,39 +168,28 @@ $(function() {
         scene = new Physijs.Scene;
         scene.setGravity(new THREE.Vector3(0, gravity, 0));
 
-
-
-        // bgAud.addEventListener('ended', function() {
-        //     this.currentTime = 0;
-        //     this.play();
-        //     this.volume = 1;
-        // }, false);
-        bgAud.volume = 1;
-
-        bgAud2.addEventListener('ended', function() {
+        themeAud.volume = 1;
+        shepardAud.addEventListener('ended', function() {
             this.currentTime = 0;
             this.play();
             this.volume = 0.0;
         }, false);
-        bgAud2.volume = 0.0;
-        bgAud2.currentTime = 30;
-
+        shepardAud.volume = 0.0;
+        shepardAud.currentTime = 30;
 
         camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
-
         camera.position.set(0, 0, 10);
 
         scene.add(camera);
 
-
-
         //add audiolistener
         camera.add(listener);
+        //add audioLoader per https://github.com/mrdoob/three.js/pull/8370/commits/885c49edd3e09a5fc5dd3ff8cde1b03d6f4c1ac9
+        var audioLoader = new THREE.AudioLoader();
 
-        //fog
-        var fog = new THREE.Fog(0xffffff, 1, 1000);
 
-        // scene.add(fog);
+
+
 
 
         controls = new THREE.PointerLockControls(camera);
@@ -223,37 +211,16 @@ $(function() {
         var hitCounter = document.createElement("div");
         hitCounter.class = "hitcounter";
         hitCounter.style.position = "absolute";
-        hitCounter.style.top = window.innerHeight - 50 + "px";
-        hitCounter.style.left = window.innerWidth / 2 + "px";
+        hitCounter.style.top = "20px";
+        hitCounter.style.left = "97%";
         hitCounter.style.color = "#fff";
         hitCounter.style.fontFamily = "Raleway";
         hitCounter.style.fontWeight = "100";
         hitCounter.style.fontSize = "2rem";
         document.body.appendChild(hitCounter);
         $(hitCounter).text(hits);
-        hitCounter.style.display = "none";
+        // hitCounter.style.display = "none";
 
-
-        // level counter
-        var levelCounter = document.createElement("div");
-        levelCounter.class = "levelcounter";
-        levelCounter.style.position = "absolute";
-        levelCounter.style.top = window.innerHeight / 2 + "px";
-        levelCounter.style.left = window.innerWidth / 2 + "px";
-        levelCounter.style.color = "#fff";
-        levelCounter.style.width = window.innerWidth / 3 + "px";
-        levelCounter.style.height = window.innerHeight / 3 + "px";
-        levelCounter.style.marginLeft = (-1 * window.innerWidth / 6) + "px";
-        levelCounter.style.marginTop = (-1 * window.innerHeight / 1.4) + "px";
-
-        levelCounter.style.fontFamily = "Raleway";
-        levelCounter.style.fontWeight = "100";
-        levelCounter.style.fontSize = "40rem";
-        levelCounter.style.textAlign = "center";
-        levelCounter.style.color = "#333";
-        document.body.appendChild(levelCounter);
-        $(levelCounter).text(level);
-        $(levelCounter).hide();
 
         // Death Mask
         var blackScreen = document.createElement("div");
@@ -320,33 +287,23 @@ $(function() {
         introText.style.marginLeft = "20px";
         introText.style.position = "absolute";
         introText.style.top = "0px";
-        // introText.style.padding = "40px";
-        // introText.style. =
         introText.style.backgroundColor = "black";
         introText.style.color = "white";
-
         introText.style.width = window.innerWidth + "px";
         introText.style.height = window.innerHeight + "px";
-        // introText. =
         introScreen.appendChild(introText);
         element.appendChild(introScreen);
-        // $(introText).hide();
-
 
         function displayLevel(level) {
-            // $(levelCounter).style.display = "inline";
             $(levelCounter).text(level);
-
             $(levelCounter).fadeIn(3000);
             $(levelCounter).fadeOut(1500);
-            // $(levelCounter).style.display = "none";
         }
 
-
+        // FPS Controls
         var onKeyDown = function(event) {
 
             switch (event.keyCode) {
-
                 case 38: // up
                 case 87: // w
                     event.preventDefault();
@@ -375,10 +332,7 @@ $(function() {
 
                 case 80:
                     isPaused = !isPaused;
-
-
             }
-
         };
 
         var onKeyUp = function(event) {
@@ -404,14 +358,10 @@ $(function() {
                 case 68: // d
                     moveRight = false;
                     break;
-
             }
-
         };
-
         document.addEventListener('keydown', onKeyDown, false);
         document.addEventListener('keyup', onKeyUp, false);
-
 
         window.addEventListener('resize', onWindowResize, false);
 
@@ -425,19 +375,7 @@ $(function() {
             hitCounter.style.left = window.innerWidth / 2 + "px";
         }
 
-
-        // function onMouseMove(event) {
-
-        //     // calculate mouse position in normalized device coordinates
-        //     // (-1 to +1) for both components
-
-        //     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        //     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        // }
-
-
-        brick1loader = brick2loader = brick3loader = brick4loader = brick5loader = new THREE.JSONLoader();
+        brickLoader = new THREE.JSONLoader();
 
         function b1() {
             setTimeout(function() {
@@ -446,11 +384,8 @@ $(function() {
                 var randomSignY = (Math.round(Math.random()) * 2 - 1);
                 var x = randomSignX * Math.floor((Math.random() * multiplier) + 1);
                 var y = randomSignY * Math.floor((Math.random() * multiplier) + 1);
-                var audioLoader = new THREE.Audio(listener);
-                audioLoader.setRefDistance(30);
-                audioLoader.autoplay = true;
-                brick5loader.load("./JSON/R-shape.json", function(geometry) {
 
+                brickLoader.load("./JSON/R-shape.json", function(geometry) {
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
                         color: 0x009900,
                         wireframe: false
@@ -463,13 +398,16 @@ $(function() {
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
-                    mesh.add(audioLoader);
-                    audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
-                    mesh.name = "brick";
-                    // console.log(mesh.position.x + " " + mesh.position.z);
+
+                    var creationSound = new THREE.PositionalAudio(listener);
+                    audioLoader.load(notesArr[Math.floor((Math.random() * notesArr.length))], function(buffer) {
+                        creationSound.setBuffer(buffer);
+                        creationSound.setRefDistance(60);
+                        creationSound.volume = 0.3
+                        creationSound.play();
+                    });
+                    mesh.name = "R-shape";
                     scene.add(mesh);
-
-
                 });
             }, 2000);
         }
@@ -481,10 +419,8 @@ $(function() {
                 var randomSignY = (Math.round(Math.random()) * 2 - 1);
                 var x = randomSignX * Math.floor((Math.random() * multiplier) + 1);
                 var y = randomSignY * Math.floor((Math.random() * multiplier) + 1);
-                var audioLoader = new THREE.Audio(listener);
-                audioLoader.setRefDistance(30);
-                audioLoader.autoplay = true;
-                brick5loader.load("./JSON/cube.json", function(geometry) {
+
+                brickLoader.load("./JSON/cube.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
                         color: 0x000080,
@@ -494,19 +430,23 @@ $(function() {
                     mesh.position.y = 100;
                     mesh.position.x = x;
                     mesh.position.z = y;
-
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
-                    mesh.name = "brick";
-                    // console.log(mesh.position.x + " " + mesh.position.z);
-                    audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
+                    mesh.name = "cube";
+                    var creationSound = new THREE.PositionalAudio(listener);
+                    audioLoader.load(notesArr[Math.floor((Math.random() * notesArr.length))], function(buffer) {
+                        creationSound.setBuffer(buffer);
+                        creationSound.setRefDistance(60);
+                        creationSound.volume = 0.3;
+                        mesh.add(creationSound);
+                        creationSound.play();
+                    });
+                    // mesh.add(creationSound);
+                    // creationSound.load(notesArr[Math.floor((Math.random() * notesArr.length))]);
                     scene.add(mesh);
-
-
                 });
             }, 2000);
-
         }
 
         function b3() {
@@ -516,10 +456,8 @@ $(function() {
                 var randomSignY = (Math.round(Math.random()) * 2 - 1);
                 var x = randomSignX * Math.floor((Math.random() * multiplier) + 1);
                 var y = randomSignY * Math.floor((Math.random() * multiplier) + 1);
-                var audioLoader = new THREE.Audio(listener);
-                audioLoader.setRefDistance(30);
-                audioLoader.autoplay = true;
-                brick5loader.load("./JSON/squiggly.json", function(geometry) {
+
+                brickLoader.load("./JSON/squiggly.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
                         color: 0x008080,
@@ -529,16 +467,21 @@ $(function() {
                     mesh.position.y = 100;
                     mesh.position.x = x;
                     mesh.position.z = y;
-
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
-                    mesh.name = "brick";
-                    // console.log(mesh.position.x + " " + mesh.position.z);
-                    audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
+                    mesh.name = "squiggly";
+                    var creationSound = new THREE.PositionalAudio(listener);
+                    audioLoader.load(notesArr[Math.floor((Math.random() * notesArr.length))], function(buffer) {
+                        creationSound.setBuffer(buffer);
+                        creationSound.setRefDistance(60);
+                        creationSound.volume = 0.3;
+                        mesh.add(creationSound);
+                        creationSound.play();
+                    });
+                    // mesh.add(creationSound);
+                    // creationSound.load(notesArr[Math.floor((Math.random() * notesArr.length))]);
                     scene.add(mesh);
-
-
                 });
             }, 2000);
 
@@ -552,10 +495,8 @@ $(function() {
                 var randomSignY = (Math.round(Math.random()) * 2 - 1);
                 var x = randomSignX * Math.floor((Math.random() * multiplier) + 1);
                 var y = randomSignY * Math.floor((Math.random() * multiplier) + 1);
-                var audioLoader = new THREE.Audio(listener);
-                audioLoader.setRefDistance(30);
-                audioLoader.autoplay = true;
-                brick5loader.load("./JSON/pedestal.json", function(geometry) {
+
+                brickLoader.load("./JSON/pedestal.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
                         color: 0xD2691E,
@@ -565,16 +506,21 @@ $(function() {
                     mesh.position.y = 100;
                     mesh.position.x = x;
                     mesh.position.z = y;
-
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
-                    mesh.name = "brick";
-                    // console.log(mesh.position.x + " " + mesh.position.z);
-                    audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
+                    mesh.name = "pedestal";
+                    var creationSound = new THREE.PositionalAudio(listener);
+                    audioLoader.load(notesArr[Math.floor((Math.random() * notesArr.length))], function(buffer) {
+                        creationSound.setBuffer(buffer);
+                        creationSound.setRefDistance(60);
+                        creationSound.volume = 0.3;
+                        mesh.add(creationSound);
+                        creationSound.play();
+                    });
+                    // mesh.add(creationSound);
+                    // creationSound.load(notesArr[Math.floor((Math.random() * notesArr.length))]);
                     scene.add(mesh);
-
-
                 });
             }, 2000);
 
@@ -588,10 +534,8 @@ $(function() {
                 var randomSignY = (Math.round(Math.random()) * 2 - 1);
                 var x = randomSignX * Math.floor((Math.random() * multiplier) + 1);
                 var y = randomSignY * Math.floor((Math.random() * multiplier) + 1);
-                var audioLoader = new THREE.Audio(listener);
-                audioLoader.setRefDistance(30);
-                audioLoader.autoplay = true;
-                brick5loader.load("./JSON/longline.json", function(geometry) {
+
+                brickLoader.load("./JSON/longline.json", function(geometry) {
 
                     var mesh = new Physijs.BoxMesh(geometry, new THREE.MeshPhongMaterial({
                         color: 0x800000,
@@ -601,16 +545,21 @@ $(function() {
                     mesh.position.y = 100;
                     mesh.position.x = x;
                     mesh.position.z = y;
-                    // console.log(mesh.position.x + " " + mesh.position.z);
                     mesh.rotation.x = x;
                     mesh.rotation.y = y;
                     mesh.rotation.z = x;
-                    mesh.name = "brick";
+                    mesh.name = "longline";
+                    var creationSound = new THREE.PositionalAudio(listener);
+                    audioLoader.load(notesArr[Math.floor((Math.random() * notesArr.length))], function(buffer) {
+                        creationSound.setBuffer(buffer);
+                        creationSound.setRefDistance(60);
+                        creationSound.volume = 0.3;
+                        mesh.add(creationSound);
+                        creationSound.play();
+                    });
 
-                    audioLoader.load(notesArr[Math.floor((Math.random() * 7))]);
+                    // creationSound.load(notesArr[Math.floor((Math.random() * notesArr.length))]);
                     scene.add(mesh);
-
-
                 });
             }, 2000);
 
@@ -641,26 +590,22 @@ $(function() {
                         b5();
                         break;
                 }
-
-
             }
 
             if (!isPaused && !isDead && !isIntro) {
                 var brickNum = Math.round(Math.random() * 5) + 1;
-                if (brickNum % 3 == 0) {
+                if (brickNum % 2 == 0) {
                     makeBrick(1);
-                } else if (brickNum % 4 == 0) {
+                } else if (brickNum % 3 == 0) {
                     makeBrick(2);
-                } else if (brickNum % 5 == 0) {
+                } else if (brickNum % 4 == 0) {
                     makeBrick(3);
-                } else if (brickNum % 2 == 0) {
+                } else if (brickNum % 5 == 0) {
                     makeBrick(4);
                 } else {
                     makeBrick(5);
                 }
                 times++;
-                // console.log("time: " + times);
-                // console.log("maxtime:" + maxTimes);
                 if (times >= maxTimes) {
                     clearInterval(timelyMake);
                 }
@@ -670,28 +615,44 @@ $(function() {
 
 
 
-        //checkerboard plane
-
-        // var loader = new THREE.TextureLoader();
-
-         die = function(level) {
+        // death conditions and behavior
+        die = function(level) {
 
             isDead = true;
             document.exitPointerLock();
-            $(bgAud2).animate({ volume: 0 }, 2000);
-            // bgAud.currentTime = 0;
-            // bgAud.volume = 1;
-            // bgAud.play();
-            element.appendChild(blackScreen);
+            $(shepardAud).animate({
+                volume: 0
+            }, 2000);
+            endFX.volume = 0.0;
+            endFX.loop = true;
+            endFX.play();
+            $(endFX).animate({
+                volume: 0.4
+            }, 20000);
 
-            $(blackScreen).animate({ opacity: 1 }, 2000);
-            $('.p1d').animate({ opacity: 1 }, 10000);
-            $('.p2d').animate({ opacity: 1 }, 20000);
-            $('.p3d').animate({ opacity: 1 }, 30000);
-            $('.p4d').animate({ opacity: 1 }, 50000);
-            $('.p5d').animate({ opacity: 1 }, 60000);
+            element.appendChild(blackScreen);
+            cancelAnimationFrame(reqFr);
+            $(blackScreen).animate({
+                opacity: 1
+            }, 2000);
+            $('.p1d').animate({
+                opacity: 1
+            }, 5000);
+            $('.p2d').animate({
+                opacity: 1
+            }, 10000);
+            $('.p3d').animate({
+                opacity: 1
+            }, 15000);
+            $('.p4d').animate({
+                opacity: 1
+            }, 20000);
+            $('.p5d').animate({
+                opacity: 1
+            }, 25000);
 
             setTimeout(function() {
+
                 window.addEventListener("mousedown", function() {
                     location.reload();
                 });
@@ -699,27 +660,32 @@ $(function() {
 
         }
 
-
         var original = 0xa45757;
-        plane = new Physijs.CylinderMesh(new THREE.CylinderGeometry(500, 500, 5, 34), new THREE.MeshPhongMaterial({ color: original }), 0);
+        plane = new Physijs.CylinderMesh(new THREE.CylinderGeometry(500, 500, 5, 34), new THREE.MeshPhongMaterial({
+            color: original
+        }), 0);
 
         plane.rotation.x = Math.PI;
         plane.position.set(0, 0, 0);
         plane.name = "plane";
         plane.addEventListener('collision', function(other_object) {
 
-
             if (!other_object.dead) {
                 other_object.dead = true;
+                crashFX = new THREE.PositionalAudio(listener);
+                audioLoader.load('./audio/crash.ogg', function(buffer) {
+                    crashFX.setBuffer(buffer);
+                    crashFX.setRefDistance(100);
+                    crashFX.volume = 0.1
+                    crashFX.play();
+                });
+
                 crashedArr.push(other_object);
                 crashToll++
-
             }
 
             if (crashToll > 11 - level * 2) {
-                // console.log("death");
                 die(level);
-                // $(document).fadeOut();
             }
 
         });
@@ -741,9 +707,6 @@ $(function() {
         lights4.position.set(-150, 200, -150);
         scene.add(lights4);
 
-        // var light2 = new THREE.AmbientLight(0xFFdddd, 0.2);
-        // scene.add(light2);
-
         requestAnimationFrame(render);
 
 
@@ -758,7 +721,6 @@ $(function() {
             side: THREE.DoubleSide,
             transparent: true,
             needsUpdate: true
-                // color: 0xff00ff
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
@@ -767,7 +729,6 @@ $(function() {
             transparent: true,
             needsUpdate: true
                 // opacity:0.1
-                // color: 0xff00ff
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
@@ -776,7 +737,6 @@ $(function() {
             transparent: true,
             needsUpdate: true
 
-            // color: 0xff00ff
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
@@ -784,7 +744,6 @@ $(function() {
             side: THREE.DoubleSide,
             transparent: true,
             needsUpdate: true
-                // color: 0xff00ff
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
@@ -792,7 +751,6 @@ $(function() {
             side: THREE.DoubleSide,
             transparent: true,
             needsUpdate: true
-                // color: 0xff00ff
         }));
         var loader = new THREE.TextureLoader();
         skyArray.push(new THREE.MeshBasicMaterial({
@@ -800,9 +758,7 @@ $(function() {
             side: THREE.DoubleSide,
             transparent: true,
             needsUpdate: true
-                // color: 0xff00ff
         }));
-
 
         var skyMaterial = new THREE.MeshFaceMaterial(skyArray);
         // SkyMaterial.transparent = true;
@@ -969,41 +925,40 @@ $(function() {
         skyBox4.position.y = 245;
         scene.add(skyBox4);
 
-        // particle party
         // Create particle group and emitter
-        function initParticles() {
-            var loader = new THREE.TextureLoader();
-            particleGroup = new SPE.Group({
-                texture: {
-                    value: loader.load('./images/star1.png')
-                },
-                fog: false,
-                maxParticleCount: 30000
-            });
+        // function initParticles() {
+        //     var loader = new THREE.TextureLoader();
+        //     particleGroup = new SPE.Group({
+        //         texture: {
+        //             value: loader.load('./images/star1.png')
+        //         },
+        //         fog: false,
+        //         maxParticleCount: 30000
+        //     });
+        //
+        //     emitter = new SPE.Emitter({
+        //         type: SPE.distributions.SPHERE,
+        //         maxAge: 4,
+        //         position: {
+        //             value: new THREE.Vector3(0, 100, 0),
+        //             spread: new THREE.Vector3(1000, 30, 1000)
+        //         },
+        //         opacity: [0.9],
+        //         size: {
+        //             value: [0, 1, 0]
+        //         },
+        //         particleCount: 30000,
+        //         isStatic: false
+        //     });
+        //
+        //     particleGroup.addEmitter(emitter);
+        //     scene.add(particleGroup.mesh);
+        // }
+        //
+        // initParticles();
 
-            emitter = new SPE.Emitter({
-                type: SPE.distributions.SPHERE,
-                maxAge: 4,
-                position: {
-                    value: new THREE.Vector3(0, 100, 0),
-                    spread: new THREE.Vector3(1000, 30, 1000)
-                },
-                opacity: [0.9],
-                size: { value: [0, 1, 0] },
-                // wiggle: {spread:20},
-                // rotation: {axis:new THREE.Vector3(1, 0, 0)},
-                particleCount: 30000,
-                isStatic: false
-            });
-
-            particleGroup.addEmitter(emitter);
-            scene.add(particleGroup.mesh);
-        }
-
-        initParticles();
 
         //postprocessing
-
         var bokehPass = new THREE.BokehPass(scene, camera, {
             focus: 1,
             aperture: 0.02,
@@ -1022,24 +977,10 @@ $(function() {
         // dotScreenEffect.renderToScreen = true;
         // composer.addPass(dotScreenEffect);
 
-
         composer.addPass(new THREE.RenderPass(scene, camera));
         composer.addPass(bokehPass);
 
-
-
-        camera.lookAt(new THREE.Vector3(0, 20, -100));
-
-
-        // window.addEventListener('mousemove', onMouseMove, false);
-
-
-        //helper plane for dragging
-        // var helplane = new THREE.Mesh(
-        //     new THREE.PlaneBufferGeometry(2000, 2000, 8, 8),
-        //     new THREE.MeshBasicMaterial({ visible: true })
-        // );
-        // scene.add(helplane);
+        // camera.lookAt(new THREE.Vector3(0, 20, -100));
 
         //click raycasting
         document.addEventListener('mousedown', function() {
@@ -1047,7 +988,7 @@ $(function() {
             var mouse = new THREE.Vector2();
             mouse.x = 0.0;
             mouse.y = 0.0;
-            // console.log(mouse.x, mouse.y);
+
             // update the picking ray with the camera and mouse position
             raycaster.setFromCamera(mouse, camera);
             // calculate objects intersecting the picking ray
@@ -1055,20 +996,28 @@ $(function() {
             for (var i = 0; i < intersects.length; i++) {
 
                 if (intersects[i].object.name != "plane" && intersects[i].object.type != "Points" && !intersects[i].object.dead) {
-                    // intersects[i].object.material.color.set(0x00ff00);
 
                     intersects[i].object.material.wireframe = true;
-                    // intersects[i].object.material.transparent = true;
                     intersects[i].object.dead = true;
+                    // if (hitSound.isplaying){
+                    //   hitSound.stop();
+                    //
+                    // }
+                    hitSound = new THREE.PositionalAudio(listener);
+                    audioLoader.load('./audio/hit2.ogg', function(buffer) {
+                        hitSound.setBuffer(buffer);
+                        hitSound.setRefDistance(50);
+                        hitSound.volume = 0.4;
+                        hitSound.play();
+                    });
 
                     freezeArray.push(intersects[i].object);
-
 
                     hits++;
                     $(hitCounter).text(hits);
                 }
 
-                //victoree
+                //victory
                 if (hits >= level * 10) {
                     dropInterval -= level * 600;
                     multiplier += level * 45;
@@ -1078,59 +1027,62 @@ $(function() {
                     crashToll = 0;
                     // console.log(crashedArr);
                     for (var i = 0; i < crashedArr.length; i++) {
-                        // console.log(crashedArr[i]);
                         scene.remove(crashedArr[i]);
-
-                        // scene.remove(crashedArr[i]);
                     }
                     switch (level) {
                         case 1:
                             for (var i = 0; i < skyBox1.material.materials.length; i++) {
-                                TweenLite.to(skyBox1.material.materials[i], 5, { opacity: 0, onComplete: fadeBox });
+                                TweenLite.to(skyBox1.material.materials[i], 5, {
+                                    opacity: 0,
+                                    onComplete: fadeBox
+                                });
                             }
 
                             function fadeBox() {
 
-                                // console.log(level);
-
-
                                 scene.remove(skyBox1);
                                 plane.material.color = new THREE.Color(0xff00ff);
                                 for (var i = 0; i < skyBox3.material.materials.length; i++) {
-                                    TweenLite.to(skyBox3.material.materials[i], 3, { opacity: 1 });
+                                    TweenLite.to(skyBox3.material.materials[i], 3, {
+                                        opacity: 1
+                                    });
                                 }
                             }
                             break;
                         case 2:
                             for (var i = 0; i < skyBox3.material.materials.length; i++) {
-                                TweenLite.to(skyBox3.material.materials[i], 5, { opacity: 0, onComplete: fadeBox2 });
+                                TweenLite.to(skyBox3.material.materials[i], 5, {
+                                    opacity: 0,
+                                    onComplete: fadeBox2
+                                });
                             }
 
                             function fadeBox2() {
-
-                                // console.log(level);
-
-
                                 scene.remove(skyBox3);
                                 plane.material.color = new THREE.Color(0x84003f);
                                 for (var i = 0; i < skyBox2.material.materials.length; i++) {
-                                    TweenLite.to(skyBox2.material.materials[i], 3, { opacity: 1 });
+                                    TweenLite.to(skyBox2.material.materials[i], 3, {
+                                        opacity: 1
+                                    });
                                 }
                             }
 
                             break;
                         case 3:
                             for (var i = 0; i < skyBox2.material.materials.length; i++) {
-                                TweenLite.to(skyBox2.material.materials[i], 5, { opacity: 0, onComplete: fadeBox3 });
+                                TweenLite.to(skyBox2.material.materials[i], 5, {
+                                    opacity: 0,
+                                    onComplete: fadeBox3
+                                });
                             }
 
                             function fadeBox3() {
-
-                                // console.log(level);
                                 scene.remove(skyBox2);
                                 plane.material.color = new THREE.Color(0x455666);
                                 for (var i = 0; i < skyBox4.material.materials.length; i++) {
-                                    TweenLite.to(skyBox4.material.materials[i], 3, { opacity: 1 });
+                                    TweenLite.to(skyBox4.material.materials[i], 3, {
+                                        opacity: 1
+                                    });
                                 }
                             }
 
@@ -1141,40 +1093,105 @@ $(function() {
                     level++;
                     // displayLevel(level);
                 }
-
-
-
-
-
-
             }
-
-            // console.log(controls.getObject().position);
         }, false);
 
-
-
-        // displayLevel(level);
-
-
         //start intro screen!
-        $('.1p').animate({ opacity: 1 }, 10000);
-        $('.2p').animate({ opacity: 1 }, 30000);
-        $('.3p').animate({ opacity: 1 }, 60000);
-        bgAud.play();
-
+        $('.1p').animate({
+            opacity: 1
+        }, 10000);
+        $('.2p').animate({
+            opacity: 1
+        }, 15000);
+        $('.3p').animate({
+            opacity: 1
+        }, 20000);
+        themeAud.play();
 
         $(introScreen).click(function() {
 
-            $(bgAud).animate({ volume: 0 }, 1000);
+            $(themeAud).animate({
+                volume: 0
+            }, 1000);
             setTimeout(function() {
-                bgAud.stop();
+                themeAud.pause();
             }, 1500);
-            $(bgAud2).animate({ volume: 0.5 }, 6000);
+            $(shepardAud).animate({
+                volume: 0.5
+            }, 6000);
             $(introScreen).fadeOut(2000);
             setTimeout(function() {
                 element.removeChild(introScreen);
             }, 2000);
+
+
+            //instructions
+            (function displayInfo() {
+                var inst = document.createElement("img");
+                inst.style.position = "absolute";
+                inst.style.width = "35%";
+                inst.style.top = "65%";
+                inst.style.left = "32.5%";
+                inst.style.opacity = "0";
+                inst.src = "./images/inst.png";
+                document.body.appendChild(inst);
+                $(inst).animate({
+                    opacity: 1
+                }, 2000, function() {
+                    $(inst).animate({
+                        opacity: 0
+                    }, 8000);
+                });
+            })();
+
+            //taunt
+            (function taunt() {
+                var tauntArr = [
+                    "this is better than your reality",
+                    "trust gravity",
+                    "this level can last forever",
+                    "food, the prolonger, is abominable",
+                    "what day is it?",
+                    "as you wish",
+                    "have you ever purposefully lost a game?",
+                    "remember those who fell before you",
+                    "don't go outside stay in your head don't go",
+                    "no randomization is completely unorganized. no certainty is without cha0s",
+                    "which color tastes the best?",
+                    "the difference between you and a madman is",
+                    "fractured conscience =/= fractured memory",
+                    "bits and bytes and ACTG and fine print",
+                    "a 240p rose is still a røse",
+                    "sunlight is cancerous",
+                    "diseases thrive in the wild"
+                ];
+
+
+                var tauntSpan = document.createElement("div");
+                tauntSpan.style.position = "absolute";
+                tauntSpan.style.textAlign = "center";
+                tauntSpan.style.width = "100%"
+                tauntSpan.style.top = "10%";
+                // tauntSpan.style.left = "40%";
+                tauntSpan.style.color = "#fff";
+                tauntSpan.style.fontFamily = "Inconsolata";
+                tauntSpan.style.fontSize = "1.5em";
+                tauntSpan.style.opacity = 0;
+                document.body.appendChild(tauntSpan);
+
+                var tauntInt = setInterval(function() {
+                    var ranTaunt = tauntArr[Math.floor(Math.random() * tauntArr.length)];
+
+                    $(tauntSpan).text(ranTaunt);
+                    $(tauntSpan).animate({
+                        opacity: 1
+                    }, 5000, function() {
+                        $(tauntSpan).animate({
+                            opacity: 0
+                        }, 5000);
+                    });
+                }, 15000);
+            })();
 
             isIntro = false;
         });
@@ -1185,17 +1202,15 @@ $(function() {
     };
 
 
-    // bad, nasty error bandaid
-
+    // bad error bandaid
     window.onerror = function() {
         return true;
     };
 
     render = function() {
-        // FPC.update(clock.getDelta());
 
-        particleGroup.tick(clock.getDelta());
-
+        // particleGroup.tick(clock.getDelta());
+        // prevTime = time;
         if (controlsEnabled) {
 
             var time = performance.now();
@@ -1212,12 +1227,6 @@ $(function() {
             if (moveLeft) velocity.x -= 400.0 * delta;
             if (moveRight) velocity.x += 400.0 * delta;
 
-            // if (isOnObject === true) {
-            //     velocity.y = Math.max(0, velocity.y);
-
-            //     canJump = true;
-            // }
-
             controls.getObject().translateX(velocity.x * delta);
             controls.getObject().translateY(velocity.y * delta);
             controls.getObject().translateZ(velocity.z * delta);
@@ -1226,18 +1235,11 @@ $(function() {
 
                 velocity.y = 0;
                 controls.getObject().position.y = 10;
-
-                // canJump = false;
-
             }
-
-            prevTime = time;
-
         }
 
         if (freezeArray.length > 0) {
             freezeArray.forEach(function(i) {
-
                 i.__dirtyPosition = true;
                 i.__dirtyRotation = true;
                 i.setLinearVelocity(new THREE.Vector3(0, 1.5, 0));
@@ -1245,25 +1247,22 @@ $(function() {
             });
         }
 
-        requestAnimationFrame(render);
+        reqFr = requestAnimationFrame(render);
 
         if (!isPaused) {
-
             if (!havePointerLock) {
                 document.requestPointerLock();
             }
 
-            bgAud2.play();
+            shepardAud.play();
             scene.simulate();
             composer.render();
             // renderer.render(scene, camera);
         } else {
-            bgAud2.pause();
+            shepardAud.pause();
             document.exitPointerLock();
         }
-
-
     };
 
-    bgAud.addEventListener("canplaythrough", init, false);
+    themeAud.addEventListener("canplaythrough", init, false);
 });
