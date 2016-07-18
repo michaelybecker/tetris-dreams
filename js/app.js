@@ -152,9 +152,14 @@ $(function() {
         }
 
         clock = new THREE.Clock();
-        renderer = new THREE.WebGLRenderer({
-            antialias: true
-        });
+        try {
+            renderer = new THREE.WebGLRenderer({
+                antialias: true
+            });
+        } catch (err) {
+            alert('Your browser has encountered a WebGL-related issue:\n\n' + err + '\n\nOn Chrome, go to Chrome://settings, "show advanced settings", and under "System" maker sure "Use hardware acceleration when available" is checked. \n' +
+                '\nFor other browsers/issues, please see http://get.webgl.org for additional WebGL troubleshooting.');
+        }
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x000000);
@@ -1140,7 +1145,7 @@ $(function() {
             })();
 
             //taunt
-            (function taunt(){
+            (function taunt() {
                 var tauntArr = [
                     "this is better than your reality",
                     "trust gravity",
@@ -1175,7 +1180,7 @@ $(function() {
                 document.body.appendChild(tauntSpan);
 
                 var tauntInt = setInterval(function() {
-                var ranTaunt = tauntArr[Math.floor(Math.random() * tauntArr.length)];
+                    var ranTaunt = tauntArr[Math.floor(Math.random() * tauntArr.length)];
 
                     $(tauntSpan).text(ranTaunt);
                     $(tauntSpan).animate({
@@ -1186,7 +1191,7 @@ $(function() {
                         }, 5000);
                     });
                 }, 15000);
-              })();
+            })();
 
             isIntro = false;
         });
