@@ -3,7 +3,7 @@
 
 ![screenshot](https://github.com/MichaelHazani/tetris-dreams/blob/master/scshot.png)
 
-[Live Version](http://michaelhazani.com/projects/tetris-dreams)
+[Live Version](http://michaelhazani.com/projects/tetris-dreams) // [Gameplay Demo](https://www.youtube.com/watch?v=K5Do0njxWrg)
 
 Utilizes:
 * [Three.js](http://threejs.org)
